@@ -17,7 +17,7 @@
 ### 💬 Start Chatting on WhatsApp  
 Click below to chat with our AgriAI Assistant:
 
-[![WhatsApp](https://img.shields.io/badge/Chat%20AgriAI%20on%20WhatsApp-25D366?style=for-the-badge&logo=whatsapp&logoColor=white)](https://wa.me/254796780678)
+[![WhatsApp](https://img.shields.io/badge/Chat%20AgriAI%20on%20WhatsApp-25D366?style=for-the-badge&logo=whatsapp&logoColor=white)](https://wa.me/254755757900)
 
 ---
 
