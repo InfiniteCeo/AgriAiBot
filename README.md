@@ -1,11 +1,19 @@
 # AgriAI Bot 🌾
+TEAM===> **AGRIBOT**
+
+Leader=>JAMES BOND ONYANGO    role===>web developer
+      =>STRAVEN MACHUKI       role===>web  designer 
+      =>STANLY ONCHANGO       role===>whatsapp bot developer
+      
+
+
 
 An AI-powered agricultural assistant system that provides expert farming advice through WhatsApp and a web-based interface, specifically designed for Kenyan farmers.
 
 ## Features
 
 - 🤖 **AI-Powered Chat**: Uses Google Gemini AI to provide expert agricultural advice
-- 📱 **WhatsApp Integration**: Receive and respond to messages via WhatsApp
+- 📱 **WhatsApp Integration**: Receive and respond to messages via WhatsApp(To be fully intergrated)
 - 🌐 **Web Interface**: Modern, responsive web chat interface
 - 📊 **Admin Commands**: Manage users, view statistics, and broadcast messages
 - 🖼️ **Image Analysis**: Send crop/disease images for AI-powered diagnosis
