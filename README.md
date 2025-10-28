@@ -1,73 +1,145 @@
-# AgriAI Bot 🌾
-TEAM===> **AGRIBOT**
+AgriBot: AI-Powered Agricultural Assistant 🇰🇪
 
-Leader : JAMES BOND ONYANGO    role===>web developer
-       : STRAVEN MACHUKI       role===>web  designer 
-       :STANLY ONCHANGO       role===>whatsapp bot developer
-      
+Expert Farming Advice via WhatsApp and Web for Kenyan Farmers
 
+An AI-powered agricultural assistant system that provides expert farming advice through WhatsApp and a web-based interface, specifically designed for Kenyan farmers. AgriBot aims to increase yield and efficiency by delivering personalized, actionable intelligence directly to the field.
 
+👥 The AgriBot Team (AGRIBOT)
 
-An AI-powered agricultural assistant system that provides expert farming advice through WhatsApp and a web-based interface, specifically designed for Kenyan farmers.
+Name
 
-## Features
+Role
 
-- 🤖 **AI-Powered Chat**: Uses Google Gemini AI to provide expert agricultural advice
-- 📱 **WhatsApp Integration**: Receive and respond to messages via WhatsApp(To be fully intergrated)
-- 🌐 **Web Interface**: Modern, responsive web chat interface
-- 📊 **Admin Commands**: Manage users, view statistics, and broadcast messages
-- 🖼️ **Image Analysis**: Send crop/disease images for AI-powered diagnosis
-- ⏱️ **Rate Limiting**: 8 requests per minute per user
-- 💾 **Database Logging**: All conversations stored in Supabase
+Focus
 
-## Tech Stack
+James Bond Onyango
 
-- **Backend**: Node.js, Express.js
-- **AI**: Google Gemini API
-- **Database**: Supabase (PostgreSQL)
-- **WhatsApp**: @whiskeysockets/baileys
-- **Frontend**: HTML, TailwindCSS, Vanilla JavaScript
+Team Leader & Web Developer
 
-## Setup Instructions
+Full-Stack Development, Project Coordination
 
-### 1. Prerequisites
+Straven Machuki
 
-- Node.js (v20.0.0 or higher)
-- npm (v9.7.2 or higher)
-- A Supabase account
-- A Google Gemini API key
+Web Designer
 
-### 2. Install Dependencies
+UI/UX, Frontend Responsiveness
 
-```bash
+Stanly Onchango
+
+WhatsApp Bot Developer
+
+Core WhatsApp Integration, Messaging Logic
+
+🚀 Live Demos & Access
+
+🌐 Web Chat Interface
+
+See the web interface in action:
+Launch AgriBot Web App
+
+📱 WhatsApp Agent
+
+Our primary communication channel is on WhatsApp. Click the button below to start a direct chat with our Agri AI Agent:
+
+(Note: The full spectrum of features is continuously being deployed and integrated into the live WhatsApp agent.)
+
+✨ Core Features
+
+Feature
+
+Description
+
+🧠 Gemini-Powered Expert Advice
+
+Utilizes the Google Gemini API to provide fast, reliable, and context-aware agricultural consultation.
+
+📱 WhatsApp Integration
+
+Seamless two-way communication allowing farmers to manage their crops without needing a separate application.
+
+🔬 Visual Disease Diagnosis
+
+Send an image of a crop or disease, and the AI will provide an immediate diagnosis, cause, and treatment plan.
+
+🌐 Modern Web Interface
+
+A responsive, alternative interface for accessing chat history and AI advice.
+
+📢 Community Management Tools
+
+Admin commands for managing users, viewing statistics, and broadcasting critical alerts (e.g., weather warnings) to all users.
+
+🛡️ Built-in Rate Limiting
+
+Ensures system stability and prevents abuse with a limit of 8 requests per minute per user.
+
+💾 Database Logging
+
+All conversations and user data are securely stored in Supabase for history tracking and analytics.
+
+🛠️ Tech Stack
+
+Backend: Node.js, Express.js (Server)
+
+AI: Google Gemini API (Core intelligence)
+
+Database: Supabase (PostgreSQL)
+
+WhatsApp: @whiskeysockets/baileys (WhatsApp client library)
+
+Frontend: HTML, TailwindCSS, Vanilla JavaScript
+
+💡 Unique Value: Structured AI Guidance
+
+The AgriBot is engineered to move beyond simple chat, providing actionable and easy-to-follow advice in a fixed, structured format for maximum utility:
+
+Short Answer: A concise summary (2-4 lines).
+
+Step-by-Step Recommendations: Clear, numbered actions to be taken immediately.
+
+Inputs / Tools Needed: Direct list of required materials (seeds, fertilizers, tools).
+
+Estimated Costs or Expected Outcome: Financial and yield impact insights.
+
+Warnings: Critical precautions (e.g., proper chemical handling and timing).
+
+⚙️ Setup Instructions
+
+1. Prerequisites
+
+Node.js (v20.0.0 or higher)
+
+npm (v9.7.2 or higher)
+
+A Supabase account
+
+A Google Gemini API key
+
+2. Install Dependencies
+
 npm install
-```
 
-### 3. Configure Environment Variables
 
-Create a `.env` file in the root directory:
+3. Configure Environment Variables
 
-```bash
+Create a .env file in the root directory by copying the example:
+
 cp .env.example .env
-```
 
-Edit `.env` and add your credentials:
 
-```env
+Edit .env and add your credentials:
+
 GEMINI_API_KEY=your_gemini_api_key_here
 SUPABASE_URL=your_supabase_project_url
 SUPABASE_ANON_KEY=your_supabase_anon_key
 PORT=3000
-```
 
-### 4. Set Up Supabase Database
 
-#### Create Tables
+4. Set Up Supabase Database
 
 Run these SQL commands in your Supabase SQL Editor:
 
-```sql
--- Users Table
+-- Users Table (Stores chat users)
 CREATE TABLE users (
   id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
   phone TEXT UNIQUE NOT NULL,
@@ -75,7 +147,7 @@ CREATE TABLE users (
   last_seen TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
--- Queries Table
+-- Queries Table (Stores conversation history)
 CREATE TABLE queries (
   id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
   user_id UUID REFERENCES users(id) ON DELETE CASCADE,
@@ -84,7 +156,7 @@ CREATE TABLE queries (
   timestamp TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
--- (Optional) Market Data Table
+-- (Optional) Market Data Table: Use this table if you integrate market price features
 CREATE TABLE market_data (
   id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
   crop TEXT NOT NULL,
@@ -92,94 +164,87 @@ CREATE TABLE market_data (
   price DECIMAL(10, 2),
   date DATE DEFAULT CURRENT_DATE
 );
-```
 
-### 5. Configure Admin Users
 
-Edit `admins.json` and add phone numbers (without + or country code with 254):
+5. Configure Admin Users
 
-```json
+Edit admins.json and add the phone numbers of trusted admins. Ensure the numbers follow the format shown (no +, no country code, e.g., 254712345678):
+
 ["254712345678", "254712345679"]
-```
 
-### 6. Run the Application
 
-```bash
+6. Run the Application
+
 npm start
-```
 
-The server will start on `http://localhost:3000`
 
-## Usage
+The server will start on http://localhost:3000.
 
-### WhatsApp Bot
+📖 Usage Guide
 
-1. The bot will generate a QR code in the terminal
-2. Scan the QR code with WhatsApp on your phone
-3. Start chatting with the bot!
+WhatsApp Bot
 
-**Example Messages:**
+Start the app and scan the QR code that appears in the terminal using the WhatsApp companion app feature on your phone.
 
-- "What are best practices for tomato farming in Kenya?"
-- "How do I control aphids on my maize crop?"
-- "What's the current market price for beans?"
+Start chatting!
 
-**Image Analysis:**
+Example Queries:
 
-- Send a photo of your crop, plant, or disease
-- Add an optional caption describing the issue
-- The AI will diagnose and provide treatment recommendations
+"What is the best fertilizer mix for my 1-month-old kale crop in a high-altitude area?"
 
-### Web Interface
+"How do I control aphids on my maize crop without harmful pesticides?"
 
-1. Open your browser to `http://localhost:3000`
-2. Type your questions in the chat interface
-3. Get instant AI-powered agricultural advice
+Visual Diagnosis:
+Simply send a photo of your problematic crop, plant, or disease. The AI will analyze the image and provide a full diagnosis and treatment plan.
 
-### Admin Commands
+Web Interface
 
-Only numbers in `admins.json` can use these commands:
+Open your browser to the hosted URL or http://localhost:3000.
 
-- `!users` - List all registered users
-- `!stats` - Show total users and query count
-- `!broadcast <message>` - Send message to all users
+Type your questions in the chat interface to receive instant advice.
 
-Example:
+Admin Commands
 
-```
-!broadcast Weather alert: Expect heavy rainfall this week
-```
+These commands are only executable by numbers listed in admins.json:
 
-## API Endpoints
+!users - List all registered users.
 
-### POST /api/chat
+!stats - Show total users and query count.
 
-Send a chat message to the AI
+!broadcast <message> - Send a specific message to all registered users.
 
-**Request:**
+Example Broadcast:
 
-```json
+!broadcast Weather alert: Expect heavy rainfall this week. Please secure your harvested produce.
+
+
+📡 API Endpoints
+
+POST /api/chat
+
+Sends a chat message to the AI.
+
+Request:
+
 {
   "message": "Your question here",
   "user": "phone_number_or_id"
 }
-```
 
-**Response:**
 
-```json
+Response:
+
 {
   "message": "AI response here"
 }
-```
 
-### GET /api/history?user=<phone>
 
-Get chat history for a user
+GET /api/history?user=<phone>
 
-**Response:**
+Retrieves the chat history for a specific user.
 
-```json
+Response:
+
 {
   "history": [
     {
@@ -189,115 +254,83 @@ Get chat history for a user
     }
   ]
 }
-```
 
-## AI Response Format
 
-The AI always responds in this structured format:
+🗺️ Project Structure
 
-1. **Short Answer** (2-4 lines)
-2. **Step-by-Step Recommendations**
-3. **Inputs / Tools Needed**
-4. **Estimated Costs or Expected Outcome**
-5. **Warnings** (if any)
-
-## Rate Limiting
-
-- Maximum 8 requests per minute per user
-- If exceeded, users receive: "Please wait, I am still processing earlier requests."
-
-## Security
-
-- All user input is sanitized
-- Only authorized admins can use admin commands
-- No external code execution allowed
-- WhatsApp authentication handled securely
-
-## Project Structure
-
-```
 agribotai/
-├── index.js                 # Main bot file
-├── commands/                # Command handlers
+├── index.js                 # Main bot file and server setup
+├── commands/                # Command handlers for admin functions
 ├── services/
-│   ├── gemini.js           # Gemini AI integration
-│   ├── supabase.js         # Supabase client
-│   └── db.js               # Database functions
+│   ├── gemini.js           # Gemini AI integration logic
+│   ├── supabase.js         # Supabase client initialization
+│   └── db.js               # Database query functions (save user, log query)
 ├── web/
-│   ├── index.html          # Web chat interface
-│   └── script.js           # Frontend JavaScript
-├── auth_info/              # WhatsApp session data
-├── admins.json             # Admin phone numbers
-└── package.json            # Dependencies
-```
+│   ├── index.html          # Web chat interface HTML
+│   └── script.js           # Frontend JavaScript logic
+├── auth_info/              # WhatsApp session data (automatically generated)
+├── admins.json             # List of authorized admin phone numbers
+└── package.json            # Project dependencies
 
-## Features in Detail
 
-### Image Analysis
+⚠️ Troubleshooting
 
-When a user sends an image with or without a caption:
+Bot Not Responding
 
-1. Image is downloaded from WhatsApp
-2. Converted to base64
-3. Sent to Gemini Vision API
-4. AI provides:
-   - Diagnosis
-   - Cause
-   - Treatment steps
-   - Prevention steps
-   - Required inputs/tools
-   - Expected outcomes
+Verify the bot is connected to WhatsApp (check terminal status).
 
-### Localization
+Check the Rate Limiting section (max 8 requests/minute).
 
-The AI is specifically trained for:
+Ensure GEMINI_API_KEY is correct in .env.
 
-- Kenyan crops and market conditions
-- Kenyan agricultural practices
-- Local pricing and market information
-- Regional climate considerations
+Check the Supabase project connection status.
 
-## Troubleshooting
+QR Code Not Appearing
 
-### Bot Not Responding
+Delete the entire auth_info folder.
 
-1. Check if the bot is connected to WhatsApp (check terminal)
-2. Verify environment variables are set correctly
-3. Check Supabase connection
-4. Review rate limiting (max 8 requests/minute)
+Restart the application (npm start).
 
-### QR Code Not Appearing
+Scan the newly generated QR code.
 
-1. Delete `auth_info` folder
-2. Restart the application
-3. Scan new QR code
+Database Errors
 
-### Database Errors
+Verify Supabase credentials in .env are accurate.
 
-1. Verify Supabase credentials in `.env`
-2. Ensure tables are created correctly
-3. Check Supabase project is active
+Ensure all tables (users, queries, etc.) were created successfully using the SQL scripts.
 
-## License
+✅ Security and Localization
 
-GPL-3.0
+Security
 
-## Contributing
+All user input is sanitized.
 
-Contributions are welcome! Please ensure:
+Admin commands are strictly gated by admins.json.
 
-- Code follows existing style
-- All features are tested
-- Documentation is updated
+WhatsApp authentication is handled securely by baileys sessions.
 
-## Support
+Localization
 
-For issues or questions, please check:
+The AI's knowledge base and response formatting are specifically tuned for:
 
-- GitHub Issues
-- Documentation
-- Supabase Dashboard for database status
+Kenyan crops and local market conditions.
 
----
+Region-specific agricultural practices and climate considerations.
 
-**Built with ❤️ for Kenyan Farmers**
+Providing locally relevant inputs and tools.
+
+🤝 Contributing
+
+Contributions are welcome! Please feel free to open a pull request after ensuring:
+
+Code adheres to existing style conventions.
+
+New features include appropriate test coverage.
+
+All documentation (especially the README) is updated.
+
+📝 License
+
+This project is licensed under the GPL-3.0 License.
+
+Built with ❤️ for Kenyan Farmers
