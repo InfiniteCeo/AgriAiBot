@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - AgriAI Bot</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #10b981;
+            border-radius: 3px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #059669;
+        }
+        
+        /* Animations */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.5s ease-out;
+        }
+        
+        /* Card hover effects */
+        .card-hover {
+            transition: all 0.3s ease;
+        }
+        
+        .card-hover:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+        
+        /* Notification badge */
+        .notification-badge {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background: #ef4444;
+            color: white;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-green-50 to-emerald-100 min-h-screen">
+    <!-- Navigation Bar -->
+    <nav class="bg-gradient-to-r from-green-600 to-emerald-600 shadow-lg">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex items-center space-x-3">
+                    <i class="fas fa-seedling text-white text-2xl"></i>
+                    <h1 class="text-white font-bold text-xl">AgriAI Bot</h1>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <div class="relative">
+                        <button id="notificationBtn" class="text-white hover:text-green-200 transition-colors p-2">
+                            <i class="fas fa-bell text-xl"></i>
+                            <span id="notificationBadge" class="notification-badge hidden">0</span>
+                        </button>
+                    </div>
+                    <div class="flex items-center space-x-2 text-white">
+                        <i class="fas fa-user-circle text-xl"></i>
+                        <span id="userName" class="hidden md:block">Loading...</span>
+                    </div>
+                    <button id="logoutBtn" class="text-white hover:text-green-200 transition-colors">
+                        <i class="fas fa-sign-out-alt mr-2"></i>Logout
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Container -->
+    <div class="max-w-7xl mx-auto px-4 py-6">
+        <!-- Welcome Section -->
+        <div class="bg-white rounded-2xl shadow-xl mb-6 p-6 fade-in">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h2 class="text-2xl md:text-3xl font-bold text-gray-800 mb-2">
+                        Welcome back, <span id="welcomeName">Farmer</span>! 🌾
+                    </h2>
+                    <p class="text-gray-600" id="welcomeMessage">
+                        Your agricultural assistant and marketplace platform
+                    </p>
+                </div>
+                <div class="hidden md:block">
+                    <div class="bg-gradient-to-r from-green-500 to-emerald-500 text-white px-6 py-3 rounded-full">
+                        <i class="fas fa-calendar-alt mr-2"></i>
+                        <span id="currentDate"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Stats -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+            <div class="bg-white rounded-xl shadow-lg p-6 card-hover fade-in">
+                <div class="flex items-center">
+                    <div class="bg-blue-100 p-3 rounded-full">
+                        <i class="fas fa-comments text-blue-600 text-xl"></i>
+                    </div>
+                    <div class="ml-4">
+                        <p class="text-gray-600 text-sm">AI Consultations</p>
+                        <p class="text-2xl font-bold text-gray-800" id="chatCount">0</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="bg-white rounded-xl shadow-lg p-6 card-hover fade-in">
+                <div class="flex items-center">
+                    <div class="bg-green-100 p-3 rounded-full">
+                        <i class="fas fa-shopping-cart text-green-600 text-xl"></i>
+                    </div>
+                    <div class="ml-4">
+                        <p class="text-gray-600 text-sm">Active Orders</p>
+                        <p class="text-2xl font-bold text-gray-800" id="orderCount">0</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="bg-white rounded-xl shadow-lg p-6 card-hover fade-in" id="saccoStatsCard">
+                <div class="flex items-center">
+                    <div class="bg-purple-100 p-3 rounded-full">
+                        <i class="fas fa-users text-purple-600 text-xl"></i>
+                    </div>
+                    <div class="ml-4">
+                        <p class="text-gray-600 text-sm">SACCO Groups</p>
+                        <p class="text-2xl font-bold text-gray-800" id="saccoCount">0</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="bg-white rounded-xl shadow-lg p-6 card-hover fade-in">
+                <div class="flex items-center">
+                    <div class="bg-yellow-100 p-3 rounded-full">
+                        <i class="fas fa-lightbulb text-yellow-600 text-xl"></i>
+                    </div>
+                    <div class="ml-4">
+                        <p class="text-gray-600 text-sm">Recommendations</p>
+                        <p class="text-2xl font-bold text-gray-800" id="recommendationCount">0</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Features Grid -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6 mb-8">
+            <!-- AI Chat Assistant -->
+            <div class="bg-white rounded-2xl shadow-xl p-6 card-hover fade-in">
+                <div class="flex items-center mb-4">
+                    <div class="bg-gradient-to-r from-blue-500 to-blue-600 p-3 rounded-full">
+                        <i class="fas fa-robot text-white text-xl"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-800 ml-3">AI Assistant</h3>
+                </div>
+                <p class="text-gray-600 mb-4">
+                    Get expert agricultural advice powered by AI. Ask about crops, diseases, market prices, and farming techniques.
+                </p>
+                <div class="flex space-x-3">
+                    <a href="index.html" class="flex-1 bg-gradient-to-r from-blue-600 to-blue-700 text-white py-2 px-4 rounded-lg hover:from-blue-700 hover:to-blue-800 transition-all duration-200 text-center">
+                        <i class="fas fa-comments mr-2"></i>Start Chat
+                    </a>
+                </div>
+            </div>
+
+            <!-- Marketplace -->
+            <div class="bg-white rounded-2xl shadow-xl p-6 card-hover fade-in">
+                <div class="flex items-center mb-4">
+                    <div class="bg-gradient-to-r from-green-500 to-green-600 p-3 rounded-full">
+                        <i class="fas fa-store text-white text-xl"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-800 ml-3">Marketplace</h3>
+                </div>
+                <p class="text-gray-600 mb-4">
+                    Browse and purchase farm inputs, equipment, and services. Access bulk pricing through SACCO groups.
+                </p>
+                <div class="flex space-x-3">
+                    <a href="marketplace.html" class="flex-1 bg-gradient-to-r from-green-600 to-green-700 text-white py-2 px-4 rounded-lg hover:from-green-700 hover:to-green-800 transition-all duration-200 text-center">
+                        <i class="fas fa-shopping-bag mr-2"></i>Browse
+                    </a>
+                </div>
+            </div>
+
+            <!-- SACCO Groups -->
+            <div class="bg-white rounded-2xl shadow-xl p-6 card-hover fade-in" id="saccoFeatureCard">
+                <div class="flex items-center mb-4">
+                    <div class="bg-gradient-to-r from-purple-500 to-purple-600 p-3 rounded-full">
+                        <i class="fas fa-users text-white text-xl"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-800 ml-3">SACCO Groups</h3>
+                </div>
+                <p class="text-gray-600 mb-4">
+                    Join farmer cooperatives for bulk purchasing, shared resources, and collective bargaining power.
+                </p>
+                <div class="flex space-x-3">
+                    <a href="sacco.html" class="flex-1 bg-gradient-to-r from-purple-600 to-purple-700 text-white py-2 px-4 rounded-lg hover:from-purple-700 hover:to-purple-800 transition-all duration-200 text-center">
+                        <i class="fas fa-handshake mr-2"></i>Join Groups
+                    </a>
+                </div>
+            </div>
+
+            <!-- Profile Management -->
+            <div class="bg-white rounded-2xl shadow-xl p-6 card-hover fade-in">
+                <div class="flex items-center mb-4">
+                    <div class="bg-gradient-to-r from-indigo-500 to-indigo-600 p-3 rounded-full">
+                        <i class="fas fa-user-cog text-white text-xl"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-800 ml-3">Profile</h3>
+                </div>
+                <p class="text-gray-600 mb-4">
+                    Manage your profile, link WhatsApp, and customize your agricultural preferences.
+                </p>
+                <div class="flex space-x-3">
+                    <a href="profile.html" class="flex-1 bg-gradient-to-r from-indigo-600 to-indigo-700 text-white py-2 px-4 rounded-lg hover:from-indigo-700 hover:to-indigo-800 transition-all duration-200 text-center">
+                        <i class="fas fa-edit mr-2"></i>Edit Profile
+                    </a>
+                </div>
+            </div>
+
+            <!-- Market Intelligence -->
+            <div class="bg-white rounded-2xl shadow-xl p-6 card-hover fade-in">
+                <div class="flex items-center mb-4">
+                    <div class="bg-gradient-to-r from-orange-500 to-orange-600 p-3 rounded-full">
+                        <i class="fas fa-chart-line text-white text-xl"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-800 ml-3">Market Intelligence</h3>
+                </div>
+                <p class="text-gray-600 mb-4">
+                    Get AI-powered market insights, price trends, and personalized recommendations.
+                </p>
+                <div class="flex space-x-3">
+                    <a href="recommendations.html" class="flex-1 bg-gradient-to-r from-orange-600 to-orange-700 text-white py-2 px-4 rounded-lg hover:from-orange-700 hover:to-orange-800 transition-all duration-200 text-center">
+                        <i class="fas fa-brain mr-2"></i>View Insights
+                    </a>
+                </div>
+            </div>
+
+            <!-- Wholesaler Dashboard (conditional) -->
+            <div id="wholesalerCard" class="bg-white rounded-2xl shadow-xl p-6 card-hover fade-in hidden">
+                <div class="flex items-center mb-4">
+                    <div class="bg-gradient-to-r from-teal-500 to-teal-600 p-3 rounded-full">
+                        <i class="fas fa-warehouse text-white text-xl"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-800 ml-3">Inventory</h3>
+                </div>
+                <p class="text-gray-600 mb-4">
+                    Manage your product listings, inventory, and orders from farmers and SACCO groups.
+                </p>
+                <div class="flex space-x-3">
+                    <a href="wholesaler.html" class="flex-1 bg-gradient-to-r from-teal-600 to-teal-700 text-white py-2 px-4 rounded-lg hover:from-teal-700 hover:to-teal-800 transition-all duration-200 text-center">
+                        <i class="fas fa-boxes mr-2"></i>Manage
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Activity -->
+        <div class="bg-white rounded-2xl shadow-xl p-6 fade-in">
+            <h3 class="text-xl font-bold text-gray-800 mb-4">
+                <i class="fas fa-clock mr-2 text-green-600"></i>Recent Activity
+            </h3>
+            <div id="recentActivity" class="space-y-4">
+                <!-- Recent activity items will be loaded here -->
+                <div class="text-center text-gray-500 py-8">
+                    <i class="fas fa-history text-4xl mb-4"></i>
+                    <p>Loading recent activity...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Notification Panel -->
+    <div id="notificationPanel" class="fixed top-16 right-4 w-80 bg-white rounded-lg shadow-2xl border border-gray-200 z-50 hidden">
+        <div class="p-4 border-b border-gray-200">
+            <div class="flex items-center justify-between">
+                <h4 class="font-bold text-gray-800">Notifications</h4>
+                <button id="closeNotifications" class="text-gray-500 hover:text-gray-700">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+        </div>
+        <div id="notificationList" class="max-h-96 overflow-y-auto">
+            <!-- Notifications will be loaded here -->
+            <div class="p-4 text-center text-gray-500">
+                <i class="fas fa-bell-slash text-2xl mb-2"></i>
+                <p>No new notifications</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading Indicator -->
+    <div id="loadingIndicator" class="hidden fixed inset-0 bg-black bg-opacity-30 z-50 flex items-center justify-center">
+        <div class="bg-white rounded-2xl p-8 shadow-2xl text-center max-w-sm">
+            <i class="fas fa-spinner fa-spin text-4xl text-green-600 mb-4"></i>
+            <p class="text-gray-700 font-semibold">Loading...</p>
+        </div>
+    </div>
+
+    <script src="dashboard.js"></script>
+</body>
+</html>

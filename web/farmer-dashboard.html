@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Farmer Dashboard - AgriAI Bot</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .profit-card { background: linear-gradient(135deg, #10b981 0%, #059669 100%); }
+        .expense-card { background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); }
+        .revenue-card { background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); }
+        .savings-card { background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); }
+        .crop-card:hover { transform: translateY(-2px); transition: all 0.3s ease; }
+        .price-trend-up { color: #10b981; }
+        .price-trend-down { color: #ef4444; }
+        .price-trend-stable { color: #6b7280; }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <!-- Navigation -->
+    <nav class="bg-green-600 shadow-lg">
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="flex justify-between items-center py-4">
+                <div class="flex items-center space-x-4">
+                    <i class="fas fa-seedling text-white text-2xl"></i>
+                    <h1 class="text-white text-xl font-bold">AgriAI Farmer Dashboard</h1>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <span class="text-white" id="farmerName">Welcome, Farmer!</span>
+                    <button onclick="logout()" class="bg-green-700 hover:bg-green-800 text-white px-4 py-2 rounded-lg">
+                        <i class="fas fa-sign-out-alt mr-2"></i>Logout
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="max-w-7xl mx-auto px-4 py-6">
+        <!-- Quick Stats -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+            <div class="profit-card text-white rounded-xl p-6 shadow-lg">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-green-100 text-sm">Monthly Profit</p>
+                        <p class="text-2xl font-bold" id="monthlyProfit">KSh 0</p>
+                    </div>
+                    <i class="fas fa-chart-line text-3xl text-green-200"></i>
+                </div>
+            </div>
+            
+            <div class="revenue-card text-white rounded-xl p-6 shadow-lg">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-blue-100 text-sm">Total Revenue</p>
+                        <p class="text-2xl font-bold" id="totalRevenue">KSh 0</p>
+                    </div>
+                    <i class="fas fa-money-bill-wave text-3xl text-blue-200"></i>
+                </div>
+            </div>
+            
+            <div class="expense-card text-white rounded-xl p-6 shadow-lg">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-red-100 text-sm">Total Expenses</p>
+                        <p class="text-2xl font-bold" id="totalExpenses">KSh 0</p>
+                    </div>
+                    <i class="fas fa-receipt text-3xl text-red-200"></i>
+                </div>
+            </div>
+            
+            <div class="savings-card text-white rounded-xl p-6 shadow-lg">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-yellow-100 text-sm">Potential Savings</p>
+                        <p class="text-2xl font-bold" id="potentialSavings">KSh 0</p>
+                    </div>
+                    <i class="fas fa-piggy-bank text-3xl text-yellow-200"></i>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content Grid -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <!-- Left Column -->
+            <div class="lg:col-span-2 space-y-6">
+                <!-- My Crops -->
+                <div class="bg-white rounded-xl shadow-lg p-6">
+                    <div class="flex justify-between items-center mb-6">
+                        <h2 class="text-xl font-bold text-gray-800">
+                            <i class="fas fa-seedling text-green-600 mr-2"></i>My Crops
+                        </h2>
+                        <button onclick="addCrop()" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg">
+                            <i class="fas fa-plus mr-2"></i>Add Crop
+                        </button>
+                    </div>
+                    <div id="cropsGrid" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <!-- Crops will be loaded here -->
+                    </div>
+                </div>
+
+                <!-- Market Prices -->
+                <div class="bg-white rounded-xl shadow-lg p-6">
+                    <div class="flex justify-between items-center mb-6">
+                        <h2 class="text-xl font-bold text-gray-800">
+                            <i class="fas fa-chart-bar text-blue-600 mr-2"></i>Today's Market Prices
+                        </h2>
+                        <button onclick="refreshPrices()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg">
+                            <i class="fas fa-sync-alt mr-2"></i>Refresh
+                        </button>
+                    </div>
+                    <div id="marketPrices" class="space-y-3">
+                        <!-- Market prices will be loaded here -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Column -->
+            <div class="space-y-6">
+                <!-- AI Recommendations -->
+                <div class="bg-white rounded-xl shadow-lg p-6">
+                    <h2 class="text-xl font-bold text-gray-800 mb-4">
+                        <i class="fas fa-brain text-purple-600 mr-2"></i>AI Recommendations
+                    </h2>
+                    <div id="aiRecommendations" class="space-y-3">
+                        <!-- AI recommendations will be loaded here -->
+                    </div>
+                    <button onclick="generateRecommendations()" class="w-full mt-4 bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg">
+                        <i class="fas fa-magic mr-2"></i>Get New Advice
+                    </button>
+                </div>
+
+                <!-- Weather & Timing -->
+                <div class="bg-white rounded-xl shadow-lg p-6">
+                    <h2 class="text-xl font-bold text-gray-800 mb-4">
+                        <i class="fas fa-cloud-sun text-yellow-600 mr-2"></i>Weather & Timing
+                    </h2>
+                    <div id="weatherInfo" class="space-y-3">
+                        <!-- Weather info will be loaded here -->
+                    </div>
+                </div>
+
+                <!-- Quick Actions -->
+                <div class="bg-white rounded-xl shadow-lg p-6">
+                    <h2 class="text-xl font-bold text-gray-800 mb-4">
+                        <i class="fas fa-bolt text-orange-600 mr-2"></i>Quick Actions
+                    </h2>
+                    <div class="space-y-3">
+                        <button onclick="recordSale()" class="w-full bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg text-left">
+                            <i class="fas fa-money-bill mr-2"></i>Record Sale
+                        </button>
+                        <button onclick="recordExpense()" class="w-full bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg text-left">
+                            <i class="fas fa-receipt mr-2"></i>Record Expense
+                        </button>
+                        <button onclick="findBuyers()" class="w-full bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-left">
+                            <i class="fas fa-search mr-2"></i>Find Buyers
+                        </button>
+                        <button onclick="joinSacco()" class="w-full bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg text-left">
+                            <i class="fas fa-users mr-2"></i>Join SACCO
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Crop Modal -->
+    <div id="addCropModal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50">
+        <div class="flex items-center justify-center min-h-screen p-4">
+            <div class="bg-white rounded-xl max-w-md w-full p-6">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-lg font-bold">Add New Crop</h3>
+                    <button onclick="closeAddCropModal()" class="text-gray-500 hover:text-gray-700">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <form id="addCropForm" class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Crop Type</label>
+                        <select id="cropType" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500">
+                            <option value="">Select crop...</option>
+                            <option value="maize">Maize</option>
+                            <option value="beans">Beans</option>
+                            <option value="tomatoes">Tomatoes</option>
+                            <option value="potatoes">Potatoes</option>
+                            <option value="onions">Onions</option>
+                            <option value="cabbage">Cabbage</option>
+                            <option value="carrots">Carrots</option>
+                            <option value="spinach">Spinach</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Area (acres)</label>
+                        <input type="number" id="cropArea" step="0.1" min="0.1" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Planting Date</label>
+                        <input type="date" id="plantingDate" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Expected Harvest (kg)</label>
+                        <input type="number" id="expectedHarvest" min="1" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500">
+                    </div>
+                    <div class="flex space-x-3">
+                        <button type="button" onclick="closeAddCropModal()" class="flex-1 bg-gray-300 hover:bg-gray-400 text-gray-700 px-4 py-2 rounded-lg">
+                            Cancel
+                        </button>
+                        <button type="submit" class="flex-1 bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg">
+                            Add Crop
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Record Sale Modal -->
+    <div id="recordSaleModal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50">
+        <div class="flex items-center justify-center min-h-screen p-4">
+            <div class="bg-white rounded-xl max-w-md w-full p-6">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-lg font-bold">Record Sale</h3>
+                    <button onclick="closeRecordSaleModal()" class="text-gray-500 hover:text-gray-700">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <form id="recordSaleForm" class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Crop</label>
+                        <select id="saleCrop" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500">
+                            <option value="">Select crop...</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Quantity Sold (kg)</label>
+                        <input type="number" id="saleQuantity" min="1" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Price per kg (KSh)</label>
+                        <input type="number" id="salePrice" min="1" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Buyer</label>
+                        <input type="text" id="saleBuyer" placeholder="Buyer name or market" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Sale Date</label>
+                        <input type="date" id="saleDate" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500">
+                    </div>
+                    <div class="flex space-x-3">
+                        <button type="button" onclick="closeRecordSaleModal()" class="flex-1 bg-gray-300 hover:bg-gray-400 text-gray-700 px-4 py-2 rounded-lg">
+                            Cancel
+                        </button>
+                        <button type="submit" class="flex-1 bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg">
+                            Record Sale
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script src="farmer-dashboard.js"></script>
+</body>
+</html>

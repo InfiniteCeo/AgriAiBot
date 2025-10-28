@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Farmer SACCO Groups - AgriAI Bot</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <!-- Navigation -->
+    <nav class="bg-green-600 shadow-lg">
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="flex justify-between items-center py-4">
+                <div class="flex items-center space-x-4">
+                    <i class="fas fa-users text-white text-2xl"></i>
+                    <h1 class="text-white text-xl font-bold">Farmer SACCO Groups</h1>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <a href="farmer-dashboard.html" class="text-white hover:text-green-200">
+                        <i class="fas fa-dashboard mr-1"></i>Dashboard
+                    </a>
+                    <a href="farmer-marketplace.html" class="text-white hover:text-green-200">
+                        <i class="fas fa-store mr-1"></i>Marketplace
+                    </a>
+                    <span class="text-white" id="farmerName">Farmer</span>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="max-w-7xl mx-auto px-4 py-6">
+        <!-- SACCO Benefits Banner -->
+        <div class="bg-gradient-to-r from-green-600 to-blue-600 text-white rounded-xl p-6 mb-8">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
+                <div>
+                    <h2 class="text-2xl font-bold mb-4">Why Join a SACCO?</h2>
+                    <ul class="space-y-2 text-green-100">
+                        <li><i class="fas fa-check-circle mr-2"></i>Access to low-interest loans</li>
+                        <li><i class="fas fa-check-circle mr-2"></i>Bulk purchasing discounts</li>
+                        <li><i class="fas fa-check-circle mr-2"></i>Shared farming resources</li>
+                        <li><i class="fas fa-check-circle mr-2"></i>Group marketing power</li>
+                        <li><i class="fas fa-check-circle mr-2"></i>Financial literacy training</li>
+                    </ul>
+                </div>
+                <div class="text-center">
+                    <div class="bg-white bg-opacity-20 rounded-lg p-4">
+                        <h3 class="text-xl font-bold mb-2">Average Benefits</h3>
+                        <div class="grid grid-cols-2 gap-4 text-sm">
+                            <div>
+                                <div class="text-2xl font-bold">30%</div>
+                                <div>Cost Savings</div>
+                            </div>
+                            <div>
+                                <div class="text-2xl font-bold">25%</div>
+                                <div>Income Increase</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Stats -->
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+            <div class="bg-white rounded-xl shadow-lg p-6">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-gray-600 text-sm">My SACCOs</p>
+                        <p class="text-2xl font-bold text-green-600" id="mySaccosCount">0</p>
+                    </div>
+                    <i class="fas fa-users text-3xl text-green-200"></i>
+                </div>
+            </div>
+            
+            <div class="bg-white rounded-xl shadow-lg p-6">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-gray-600 text-sm">Available SACCOs</p>
+                        <p class="text-2xl font-bold text-blue-600" id="availableSaccosCount">8</p>
+                    </div>
+                    <i class="fas fa-search text-3xl text-blue-200"></i>
+                </div>
+            </div>
+            
+            <div class="bg-white rounded-xl shadow-lg p-6">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-gray-600 text-sm">Total Members</p>
+                        <p class="text-2xl font-bold text-purple-600" id="totalMembers">156</p>
+                    </div>
+                    <i class="fas fa-user-friends text-3xl text-purple-200"></i>
+                </div>
+            </div>
+            
+            <div class="bg-white rounded-xl shadow-lg p-6">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-gray-600 text-sm">Potential Savings</p>
+                        <p class="text-2xl font-bold text-orange-600" id="potentialSavings">KSh 15,000</p>
+                    </div>
+                    <i class="fas fa-piggy-bank text-3xl text-orange-200"></i>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <!-- Left Column - My SACCOs -->
+            <div class="lg:col-span-2">
+                <div class="bg-white rounded-xl shadow-lg p-6 mb-6">
+                    <div class="flex justify-between items-center mb-6">
+                        <h2 class="text-xl font-bold text-gray-800">
+                            <i class="fas fa-users text-green-600 mr-2"></i>My SACCO Groups
+                        </h2>
+                        <button onclick="showCreateSACCOModal()" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg">
+                            <i class="fas fa-plus mr-2"></i>Create SACCO
+                        </button>
+                    </div>
+                    <div id="mySaccosContainer">
+                        <!-- User's SACCOs will be loaded here -->
+                    </div>
+                </div>
+
+                <!-- Available SACCOs -->
+                <div class="bg-white rounded-xl shadow-lg p-6">
+                    <div class="flex justify-between items-center mb-6">
+                        <h2 class="text-xl font-bold text-gray-800">
+                            <i class="fas fa-search text-blue-600 mr-2"></i>Available SACCO Groups
+                        </h2>
+                        <div class="flex space-x-2">
+                            <select id="regionFilter" class="px-3 py-2 border border-gray-300 rounded-lg">
+                                <option value="">All Regions</option>
+                                <option value="Nairobi">Nairobi</option>
+                                <option value="Central">Central</option>
+                                <option value="Eastern">Eastern</option>
+                                <option value="Western">Western</option>
+                                <option value="Rift Valley">Rift Valley</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div id="availableSaccosContainer">
+                        <!-- Available SACCOs will be loaded here -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Column -->
+            <div class="space-y-6">
+                <!-- SACCO Benefits Calculator -->
+                <div class="bg-white rounded-xl shadow-lg p-6">
+                    <h2 class="text-xl font-bold text-gray-800 mb-4">
+                        <i class="fas fa-calculator text-purple-600 mr-2"></i>Benefits Calculator
+                    </h2>
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Monthly Farm Expenses (KSh)</label>
+                            <input type="number" id="monthlyExpenses" value="10000" min="1000" class="w-full px-3 py-2 border border-gray-300 rounded-lg">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Expected SACCO Size</label>
+                            <select id="saccoSize" class="w-full px-3 py-2 border border-gray-300 rounded-lg">
+                                <option value="10">Small (10 members)</option>
+                                <option value="25" selected>Medium (25 members)</option>
+                                <option value="50">Large (50+ members)</option>
+                            </select>
+                        </div>
+                        <button onclick="calculateBenefits()" class="w-full bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg">
+                            <i class="fas fa-calculator mr-2"></i>Calculate Savings
+                        </button>
+                        <div id="benefitsResult" class="hidden bg-green-50 border border-green-200 rounded-lg p-4">
+                            <!-- Benefits calculation result will be shown here -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SACCO Success Stories -->
+                <div class="bg-white rounded-xl shadow-lg p-6">
+                    <h2 class="text-xl font-bold text-gray-800 mb-4">
+                        <i class="fas fa-star text-yellow-600 mr-2"></i>Success Stories
+                    </h2>
+                    <div class="space-y-4">
+                        <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-3">
+                            <h4 class="font-semibold text-yellow-800">Kiambu Farmers SACCO</h4>
+                            <p class="text-sm text-yellow-700 mt-1">Saved 35% on fertilizer costs through bulk purchasing. Members increased profits by KSh 50,000 annually.</p>
+                        </div>
+                        <div class="bg-blue-50 border border-blue-200 rounded-lg p-3">
+                            <h4 class="font-semibold text-blue-800">Meru Coffee Growers</h4>
+                            <p class="text-sm text-blue-700 mt-1">Negotiated better prices with exporters. Average income increased by 40% per member.</p>
+                        </div>
+                        <div class="bg-green-50 border border-green-200 rounded-lg p-3">
+                            <h4 class="font-semibold text-green-800">Nakuru Vegetable SACCO</h4>
+                            <p class="text-sm text-green-700 mt-1">Established direct market access. Eliminated middlemen and increased profits by 25%.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quick Actions -->
+                <div class="bg-white rounded-xl shadow-lg p-6">
+                    <h2 class="text-xl font-bold text-gray-800 mb-4">
+                        <i class="fas fa-bolt text-orange-600 mr-2"></i>Quick Actions
+                    </h2>
+                    <div class="space-y-3">
+                        <button onclick="findNearestSacco()" class="w-full bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-left">
+                            <i class="fas fa-map-marker-alt mr-2"></i>Find Nearest SACCO
+                        </button>
+                        <button onclick="saccoLoanCalculator()" class="w-full bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg text-left">
+                            <i class="fas fa-money-bill mr-2"></i>Loan Calculator
+                        </button>
+                        <button onclick="bulkOrderOpportunities()" class="w-full bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg text-left">
+                            <i class="fas fa-shopping-cart mr-2"></i>Bulk Orders
+                        </button>
+                        <button onclick="saccoTraining()" class="w-full bg-orange-600 hover:bg-orange-700 text-white px-4 py-2 rounded-lg text-left">
+                            <i class="fas fa-graduation-cap mr-2"></i>SACCO Training
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Create SACCO Modal -->
+    <div id="createSaccoModal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50">
+        <div class="flex items-center justify-center min-h-screen p-4">
+            <div class="bg-white rounded-xl max-w-md w-full p-6">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-lg font-bold">Create New SACCO Group</h3>
+                    <button onclick="hideCreateSACCOModal()" class="text-gray-500 hover:text-gray-700">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <form id="createSaccoForm" class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">SACCO Name</label>
+                        <input type="text" id="saccoName" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Region</label>
+                        <select id="saccoRegion" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500">
+                            <option value="">Select region...</option>
+                            <option value="Nairobi">Nairobi</option>
+                            <option value="Central">Central</option>
+                            <option value="Eastern">Eastern</option>
+                            <option value="Western">Western</option>
+                            <option value="Rift Valley">Rift Valley</option>
+                            <option value="Coast">Coast</option>
+                            <option value="Nyanza">Nyanza</option>
+                            <option value="North Eastern">North Eastern</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Focus Area</label>
+                        <select id="saccoFocus" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500">
+                            <option value="general">General Farming</option>
+                            <option value="crops">Crop Production</option>
+                            <option value="livestock">Livestock</option>
+                            <option value="dairy">Dairy Farming</option>
+                            <option value="horticulture">Horticulture</option>
+                            <option value="coffee">Coffee Growing</option>
+                            <option value="tea">Tea Growing</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Member Limit</label>
+                        <input type="number" id="saccoMemberLimit" min="5" max="100" value="25" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Monthly Contribution (KSh)</label>
+                        <input type="number" id="saccoContribution" min="100" value="500" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Description</label>
+                        <textarea id="saccoDescription" rows="3" placeholder="Describe the goals and activities of your SACCO..." class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"></textarea>
+                    </div>
+                    <div class="flex space-x-3">
+                        <button type="button" onclick="hideCreateSACCOModal()" class="flex-1 bg-gray-300 hover:bg-gray-400 text-gray-700 px-4 py-2 rounded-lg">
+                            Cancel
+                        </button>
+                        <button type="submit" class="flex-1 bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg">
+                            Create SACCO
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Join SACCO Modal -->
+    <div id="joinSaccoModal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50">
+        <div class="flex items-center justify-center min-h-screen p-4">
+            <div class="bg-white rounded-xl max-w-md w-full p-6">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-lg font-bold">Join SACCO Group</h3>
+                    <button onclick="closeJoinSaccoModal()" class="text-gray-500 hover:text-gray-700">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <div id="joinSaccoDetails">
+                    <!-- SACCO details will be loaded here -->
+                </div>
+                <div class="flex space-x-3 mt-6">
+                    <button onclick="closeJoinSaccoModal()" class="flex-1 bg-gray-300 hover:bg-gray-400 text-gray-700 px-4 py-2 rounded-lg">
+                        Cancel
+                    </button>
+                    <button onclick="confirmJoinSacco()" class="flex-1 bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg">
+                        Join SACCO
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="sacco.js"></script>
+</body>
+</html>

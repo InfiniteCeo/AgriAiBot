@@ -1,0 +1,1522 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Wholesaler Dashboard - AgriAI Bot</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <style>
+      /* Custom scrollbar */
+      ::-webkit-scrollbar {
+        width: 6px;
+      }
+      ::-webkit-scrollbar-track {
+        background: #f1f1f1;
+      }
+      ::-webkit-scrollbar-thumb {
+        background: #10b981;
+        border-radius: 3px;
+      }
+      ::-webkit-scrollbar-thumb:hover {
+        background: #059669;
+      }
+
+      /* Animations */
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .fade-in {
+        animation: fadeIn 0.5s ease-out;
+      }
+
+      /* Card hover effects */
+      .card-hover {
+        transition: all 0.3s ease;
+      }
+
+      .card-hover:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1),
+          0 10px 10px -5px rgba(0, 0, 0, 0.04);
+      }
+
+      /* Status badges */
+      .status-pending {
+        @apply bg-yellow-100 text-yellow-800;
+      }
+      .status-confirmed {
+        @apply bg-blue-100 text-blue-800;
+      }
+      .status-shipped {
+        @apply bg-purple-100 text-purple-800;
+      }
+      .status-delivered {
+        @apply bg-green-100 text-green-800;
+      }
+      .status-cancelled {
+        @apply bg-red-100 text-red-800;
+      }
+
+      /* Low stock indicator */
+      .low-stock {
+        position: relative;
+      }
+      .low-stock::after {
+        content: "";
+        position: absolute;
+        top: 0;
+        right: 0;
+        width: 8px;
+        height: 8px;
+        background: #ef4444;
+        border-radius: 50%;
+      }
+    </style>
+  </head>
+  <body class="bg-gray-50 min-h-screen">
+    <!-- Navigation Bar -->
+    <nav class="bg-gradient-to-r from-green-600 to-emerald-600 shadow-lg">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex items-center justify-between h-16">
+          <div class="flex items-center space-x-3">
+            <i class="fas fa-seedling text-white text-2xl"></i>
+            <h1 class="text-white font-bold text-xl">AgriAI Bot</h1>
+            <span class="text-green-200 text-sm hidden md:block"
+              >Wholesaler Dashboard</span
+            >
+          </div>
+          <div class="flex items-center space-x-4">
+            <a
+              href="dashboard.html"
+              class="text-white hover:text-green-200 transition-colors"
+            >
+              <i class="fas fa-home mr-2"></i>Dashboard
+            </a>
+            <a
+              href="marketplace.html"
+              class="text-white hover:text-green-200 transition-colors"
+            >
+              <i class="fas fa-store mr-2"></i>Marketplace
+            </a>
+            <div class="flex items-center space-x-2 text-white">
+              <i class="fas fa-user-circle text-xl"></i>
+              <span id="userName" class="hidden md:block">Loading...</span>
+            </div>
+            <button
+              id="logoutBtn"
+              class="text-white hover:text-green-200 transition-colors"
+            >
+              <i class="fas fa-sign-out-alt mr-2"></i>Logout
+            </button>
+          </div>
+        </div>
+      </div>
+    </nav>
+
+    <div class="max-w-7xl mx-auto px-4 py-6">
+      <!-- Header Section -->
+      <div class="bg-white rounded-2xl shadow-lg mb-6 p-6 fade-in">
+        <div
+          class="flex flex-col md:flex-row md:items-center md:justify-between"
+        >
+          <div>
+            <h2 class="text-2xl md:text-3xl font-bold text-gray-800 mb-2">
+              <i class="fas fa-warehouse mr-3 text-green-600"></i>Inventory
+              Management
+            </h2>
+            <p class="text-gray-600">
+              Manage your products, track orders, and monitor sales performance
+            </p>
+          </div>
+          <div class="mt-4 md:mt-0">
+            <button
+              id="addProductBtn"
+              class="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg transition-colors"
+            >
+              <i class="fas fa-plus mr-2"></i>Add Product
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Stats Cards -->
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        <div class="bg-white rounded-xl shadow-lg p-6 card-hover fade-in">
+          <div class="flex items-center">
+            <div class="bg-blue-100 p-3 rounded-full">
+              <i class="fas fa-boxes text-blue-600 text-xl"></i>
+            </div>
+            <div class="ml-4">
+              <p class="text-gray-600 text-sm">Total Products</p>
+              <p class="text-2xl font-bold text-gray-800" id="totalProducts">
+                0
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-white rounded-xl shadow-lg p-6 card-hover fade-in">
+          <div class="flex items-center">
+            <div class="bg-green-100 p-3 rounded-full">
+              <i class="fas fa-shopping-cart text-green-600 text-xl"></i>
+            </div>
+            <div class="ml-4">
+              <p class="text-gray-600 text-sm">Active Orders</p>
+              <p class="text-2xl font-bold text-gray-800" id="activeOrders">
+                0
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-white rounded-xl shadow-lg p-6 card-hover fade-in">
+          <div class="flex items-center">
+            <div class="bg-yellow-100 p-3 rounded-full">
+              <i
+                class="fas fa-exclamation-triangle text-yellow-600 text-xl"
+              ></i>
+            </div>
+            <div class="ml-4">
+              <p class="text-gray-600 text-sm">Low Stock Items</p>
+              <p class="text-2xl font-bold text-gray-800" id="lowStockItems">
+                0
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-white rounded-xl shadow-lg p-6 card-hover fade-in">
+          <div class="flex items-center">
+            <div class="bg-purple-100 p-3 rounded-full">
+              <i class="fas fa-chart-line text-purple-600 text-xl"></i>
+            </div>
+            <div class="ml-4">
+              <p class="text-gray-600 text-sm">Monthly Sales</p>
+              <p class="text-2xl font-bold text-gray-800" id="monthlySales">
+                KES 0
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- AI Insights Panel -->
+      <div
+        class="bg-gradient-to-r from-blue-600 to-purple-600 rounded-2xl shadow-xl mb-6 p-6 text-white fade-in"
+      >
+        <div class="flex items-center justify-between mb-4">
+          <div class="flex items-center">
+            <div class="bg-white bg-opacity-20 p-3 rounded-full mr-4">
+              <i class="fas fa-brain text-2xl"></i>
+            </div>
+            <div>
+              <h3 class="text-xl font-bold">AI Business Insights</h3>
+              <p class="text-blue-100">Powered by AgriaiBot Intelligence</p>
+            </div>
+          </div>
+          <button
+            id="refreshAIInsights"
+            class="bg-white bg-opacity-20 hover:bg-opacity-30 px-4 py-2 rounded-lg transition-colors"
+          >
+            <i class="fas fa-sync-alt mr-2"></i>Refresh
+          </button>
+        </div>
+
+        <div
+          id="aiInsightsContent"
+          class="bg-white bg-opacity-10 rounded-lg p-4"
+        >
+          <div class="text-center py-4">
+            <i class="fas fa-spinner fa-spin text-2xl mb-2"></i>
+            <p>Loading AI insights...</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Main Content Tabs -->
+      <div class="bg-white rounded-2xl shadow-lg mb-6">
+        <div class="border-b border-gray-200">
+          <nav class="flex space-x-8 px-6">
+            <button
+              id="productsTab"
+              class="py-4 px-2 border-b-2 border-green-600 text-green-600 font-medium"
+            >
+              <i class="fas fa-boxes mr-2"></i>Products
+            </button>
+            <button
+              id="ordersTab"
+              class="py-4 px-2 border-b-2 border-transparent text-gray-500 hover:text-gray-700 font-medium"
+            >
+              <i class="fas fa-shopping-cart mr-2"></i>Orders
+            </button>
+            <button
+              id="aiInsightsTab"
+              class="py-4 px-2 border-b-2 border-transparent text-gray-500 hover:text-gray-700 font-medium"
+            >
+              <i class="fas fa-brain mr-2"></i>AI Insights
+            </button>
+            <button
+              id="analyticsTab"
+              class="py-4 px-2 border-b-2 border-transparent text-gray-500 hover:text-gray-700 font-medium"
+            >
+              <i class="fas fa-chart-bar mr-2"></i>Analytics
+            </button>
+          </nav>
+        </div>
+
+        <!-- Products Tab Content -->
+        <div id="productsContent" class="p-6">
+          <div
+            class="flex flex-col md:flex-row md:items-center md:justify-between mb-6"
+          >
+            <div class="flex items-center space-x-4 mb-4 md:mb-0">
+              <div class="relative">
+                <input
+                  type="text"
+                  id="productSearch"
+                  placeholder="Search products..."
+                  class="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                />
+                <i
+                  class="fas fa-search absolute left-3 top-3 text-gray-400"
+                ></i>
+              </div>
+              <select
+                id="productFilter"
+                class="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+              >
+                <option value="">All Products</option>
+                <option value="active">Active</option>
+                <option value="inactive">Inactive</option>
+                <option value="low_stock">Low Stock</option>
+              </select>
+            </div>
+            <div class="flex space-x-2">
+              <button
+                id="aiOptimizeBtn"
+                class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg transition-colors"
+              >
+                <i class="fas fa-magic mr-2"></i>AI Optimize
+              </button>
+              <button
+                id="bulkEditBtn"
+                class="bg-gray-200 hover:bg-gray-300 text-gray-700 px-4 py-2 rounded-lg transition-colors"
+              >
+                <i class="fas fa-edit mr-2"></i>Bulk Edit
+              </button>
+              <button
+                id="exportBtn"
+                class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors"
+              >
+                <i class="fas fa-download mr-2"></i>Export
+              </button>
+            </div>
+          </div>
+
+          <!-- Products Table -->
+          <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-gray-200">
+              <thead class="bg-gray-50">
+                <tr>
+                  <th
+                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                  >
+                    <input
+                      type="checkbox"
+                      id="selectAllProducts"
+                      class="rounded border-gray-300"
+                    />
+                  </th>
+                  <th
+                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                  >
+                    Product
+                  </th>
+                  <th
+                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                  >
+                    Category
+                  </th>
+                  <th
+                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                  >
+                    Price
+                  </th>
+                  <th
+                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                  >
+                    Stock
+                  </th>
+                  <th
+                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                  >
+                    Status
+                  </th>
+                  <th
+                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                  >
+                    Actions
+                  </th>
+                </tr>
+              </thead>
+              <tbody
+                id="productsTableBody"
+                class="bg-white divide-y divide-gray-200"
+              >
+                <!-- Products will be loaded here -->
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Products Pagination -->
+          <div
+            id="productsPagination"
+            class="flex items-center justify-between mt-6"
+          >
+            <div class="text-sm text-gray-700">
+              Showing <span id="productsShowing">0</span> of
+              <span id="productsTotal">0</span> products
+            </div>
+            <div class="flex space-x-2">
+              <button
+                id="productsPrevBtn"
+                class="px-3 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                Previous
+              </button>
+              <button
+                id="productsNextBtn"
+                class="px-3 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                Next
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Orders Tab Content -->
+        <div id="ordersContent" class="p-6 hidden">
+          <div
+            class="flex flex-col md:flex-row md:items-center md:justify-between mb-6"
+          >
+            <div class="flex items-center space-x-4 mb-4 md:mb-0">
+              <div class="relative">
+                <input
+                  type="text"
+                  id="orderSearch"
+                  placeholder="Search orders..."
+                  class="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                />
+                <i
+                  class="fas fa-search absolute left-3 top-3 text-gray-400"
+                ></i>
+              </div>
+              <select
+                id="orderStatusFilter"
+                class="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+              >
+                <option value="">All Orders</option>
+                <option value="pending">Pending</option>
+                <option value="confirmed">Confirmed</option>
+                <option value="shipped">Shipped</option>
+                <option value="delivered">Delivered</option>
+                <option value="cancelled">Cancelled</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Orders Table -->
+          <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-gray-200">
+              <thead class="bg-gray-50">
+                <tr>
+                  <th
+                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                  >
+                    Order ID
+                  </th>
+                  <th
+                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                  >
+                    Customer
+                  </th>
+                  <th
+                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                  >
+                    Product
+                  </th>
+                  <th
+                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                  >
+                    Quantity
+                  </th>
+                  <th
+                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                  >
+                    Total
+                  </th>
+                  <th
+                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                  >
+                    Status
+                  </th>
+                  <th
+                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                  >
+                    Date
+                  </th>
+                  <th
+                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                  >
+                    Actions
+                  </th>
+                </tr>
+              </thead>
+              <tbody
+                id="ordersTableBody"
+                class="bg-white divide-y divide-gray-200"
+              >
+                <!-- Orders will be loaded here -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- AI Insights Tab Content -->
+        <div id="aiInsightsContent" class="p-6 hidden">
+          <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+            <!-- Product Optimization -->
+            <div
+              class="bg-gradient-to-br from-purple-50 to-blue-50 rounded-lg p-6"
+            >
+              <div class="flex items-center mb-4">
+                <div class="bg-purple-100 p-3 rounded-full mr-3">
+                  <i class="fas fa-magic text-purple-600 text-xl"></i>
+                </div>
+                <h3 class="text-lg font-bold text-gray-800">
+                  Product Optimization
+                </h3>
+              </div>
+              <div id="productOptimizations" class="space-y-3">
+                <div class="text-center py-4 text-gray-500">
+                  <i class="fas fa-spinner fa-spin text-2xl mb-2"></i>
+                  <p>Loading AI optimizations...</p>
+                </div>
+              </div>
+              <button
+                id="getOptimizationsBtn"
+                class="mt-4 w-full bg-purple-600 hover:bg-purple-700 text-white py-2 px-4 rounded-lg transition-colors"
+              >
+                <i class="fas fa-brain mr-2"></i>Get AI Suggestions
+              </button>
+            </div>
+
+            <!-- Inventory Insights -->
+            <div
+              class="bg-gradient-to-br from-green-50 to-emerald-50 rounded-lg p-6"
+            >
+              <div class="flex items-center mb-4">
+                <div class="bg-green-100 p-3 rounded-full mr-3">
+                  <i class="fas fa-warehouse text-green-600 text-xl"></i>
+                </div>
+                <h3 class="text-lg font-bold text-gray-800">
+                  Inventory Intelligence
+                </h3>
+              </div>
+              <div id="inventoryInsights" class="space-y-3">
+                <div class="text-center py-4 text-gray-500">
+                  <i class="fas fa-spinner fa-spin text-2xl mb-2"></i>
+                  <p>Loading inventory insights...</p>
+                </div>
+              </div>
+              <button
+                id="getInventoryInsightsBtn"
+                class="mt-4 w-full bg-green-600 hover:bg-green-700 text-white py-2 px-4 rounded-lg transition-colors"
+              >
+                <i class="fas fa-chart-line mr-2"></i>Analyze Inventory
+              </button>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <!-- Competitive Analysis -->
+            <div
+              class="bg-gradient-to-br from-orange-50 to-red-50 rounded-lg p-6"
+            >
+              <div class="flex items-center mb-4">
+                <div class="bg-orange-100 p-3 rounded-full mr-3">
+                  <i class="fas fa-trophy text-orange-600 text-xl"></i>
+                </div>
+                <h3 class="text-lg font-bold text-gray-800">
+                  Competitive Analysis
+                </h3>
+              </div>
+              <div id="competitiveAnalysis" class="space-y-3">
+                <div class="text-center py-4 text-gray-500">
+                  <i class="fas fa-spinner fa-spin text-2xl mb-2"></i>
+                  <p>Loading competitive analysis...</p>
+                </div>
+              </div>
+              <button
+                id="getCompetitiveAnalysisBtn"
+                class="mt-4 w-full bg-orange-600 hover:bg-orange-700 text-white py-2 px-4 rounded-lg transition-colors"
+              >
+                <i class="fas fa-search mr-2"></i>Analyze Competition
+              </button>
+            </div>
+
+            <!-- Sales Performance -->
+            <div
+              class="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-lg p-6"
+            >
+              <div class="flex items-center mb-4">
+                <div class="bg-blue-100 p-3 rounded-full mr-3">
+                  <i class="fas fa-chart-bar text-blue-600 text-xl"></i>
+                </div>
+                <h3 class="text-lg font-bold text-gray-800">
+                  Sales Intelligence
+                </h3>
+              </div>
+              <div class="mb-4">
+                <select
+                  id="salesTimeframe"
+                  class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                >
+                  <option value="30d">Last 30 Days</option>
+                  <option value="90d">Last 90 Days</option>
+                  <option value="1y">Last Year</option>
+                </select>
+              </div>
+              <div id="salesInsights" class="space-y-3">
+                <div class="text-center py-4 text-gray-500">
+                  <i class="fas fa-spinner fa-spin text-2xl mb-2"></i>
+                  <p>Loading sales insights...</p>
+                </div>
+              </div>
+              <button
+                id="getSalesInsightsBtn"
+                class="mt-4 w-full bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-lg transition-colors"
+              >
+                <i class="fas fa-analytics mr-2"></i>Analyze Sales
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Analytics Tab Content -->
+        <div id="analyticsContent" class="p-6 hidden">
+          <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <!-- Sales Chart -->
+            <div class="bg-gray-50 rounded-lg p-6">
+              <h3 class="text-lg font-bold text-gray-800 mb-4">
+                Sales Overview
+              </h3>
+              <div class="h-64 flex items-center justify-center text-gray-500">
+                <div class="text-center">
+                  <i class="fas fa-chart-line text-4xl mb-4"></i>
+                  <p>Sales chart will be displayed here</p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Top Products -->
+            <div class="bg-gray-50 rounded-lg p-6">
+              <h3 class="text-lg font-bold text-gray-800 mb-4">
+                Top Selling Products
+              </h3>
+              <div id="topProducts" class="space-y-3">
+                <!-- Top products will be loaded here -->
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Add/Edit Product Modal -->
+    <div
+      id="productModal"
+      class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden items-center justify-center p-4"
+    >
+      <div
+        class="bg-white rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto"
+      >
+        <div class="p-6 border-b border-gray-200">
+          <div class="flex items-center justify-between">
+            <h3 id="productModalTitle" class="text-xl font-bold text-gray-800">
+              Add Product
+            </h3>
+            <button
+              id="closeProductModal"
+              class="text-gray-500 hover:text-gray-700"
+            >
+              <i class="fas fa-times text-xl"></i>
+            </button>
+          </div>
+        </div>
+
+        <form id="productForm" class="p-6">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="md:col-span-2">
+              <label class="block text-sm font-medium text-gray-700 mb-2"
+                >Product Name *</label
+              >
+              <input
+                type="text"
+                id="productName"
+                required
+                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+              />
+            </div>
+
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2"
+                >Category</label
+              >
+              <select
+                id="productCategory"
+                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+              >
+                <option value="">Select Category</option>
+                <option value="Seeds">Seeds</option>
+                <option value="Fertilizers">Fertilizers</option>
+                <option value="Pesticides">Pesticides</option>
+                <option value="Tools">Tools & Equipment</option>
+                <option value="Irrigation">Irrigation</option>
+                <option value="Livestock">Livestock Feed</option>
+                <option value="Other">Other</option>
+              </select>
+            </div>
+
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2"
+                >Unit Type *</label
+              >
+              <input
+                type="text"
+                id="productUnitType"
+                required
+                placeholder="e.g., kg, liters, pieces"
+                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+              />
+            </div>
+
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2"
+                >Unit Price (KES) *</label
+              >
+              <input
+                type="number"
+                id="productUnitPrice"
+                required
+                min="0"
+                step="0.01"
+                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+              />
+            </div>
+
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2"
+                >Stock Quantity *</label
+              >
+              <input
+                type="number"
+                id="productStockQuantity"
+                required
+                min="0"
+                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+              />
+            </div>
+
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2"
+                >Location</label
+              >
+              <input
+                type="text"
+                id="productLocation"
+                placeholder="e.g., Nairobi, Kenya"
+                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+              />
+            </div>
+
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2"
+                >Image URL</label
+              >
+              <input
+                type="url"
+                id="productImageUrl"
+                placeholder="https://example.com/image.jpg"
+                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+              />
+            </div>
+
+            <div class="md:col-span-2">
+              <label class="block text-sm font-medium text-gray-700 mb-2"
+                >Description</label
+              >
+              <div class="relative">
+                <textarea
+                  id="productDescription"
+                  rows="3"
+                  class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                  placeholder="Describe your product..."
+                ></textarea>
+                <button
+                  type="button"
+                  id="aiDescriptionBtn"
+                  class="absolute top-2 right-2 bg-purple-600 hover:bg-purple-700 text-white px-3 py-1 rounded text-sm transition-colors"
+                >
+                  <i class="fas fa-magic mr-1"></i>AI Generate
+                </button>
+              </div>
+            </div>
+
+            <div class="md:col-span-2">
+              <label class="flex items-center">
+                <input
+                  type="checkbox"
+                  id="useAIOptimization"
+                  checked
+                  class="rounded border-gray-300 text-purple-600 focus:ring-purple-500"
+                />
+                <span class="ml-2 text-sm text-gray-700">
+                  <i class="fas fa-brain text-purple-600 mr-1"></i>
+                  Use AI optimization for pricing, categories, and bulk tiers
+                </span>
+              </label>
+            </div>
+
+            <div class="md:col-span-2">
+              <label class="block text-sm font-medium text-gray-700 mb-2"
+                >Bulk Pricing (Optional)</label
+              >
+              <div id="bulkPricingContainer" class="space-y-2">
+                <div class="flex items-center space-x-2">
+                  <input
+                    type="number"
+                    placeholder="Min Quantity"
+                    min="1"
+                    class="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 bulk-quantity"
+                  />
+                  <input
+                    type="number"
+                    placeholder="Price per unit"
+                    min="0"
+                    step="0.01"
+                    class="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 bulk-price"
+                  />
+                  <button
+                    type="button"
+                    onclick="removeBulkPricingRow(this)"
+                    class="text-red-500 hover:text-red-700"
+                  >
+                    <i class="fas fa-trash"></i>
+                  </button>
+                </div>
+              </div>
+              <button
+                type="button"
+                id="addBulkPricingBtn"
+                class="mt-2 text-green-600 hover:text-green-700 text-sm"
+              >
+                <i class="fas fa-plus mr-1"></i>Add Bulk Pricing Tier
+              </button>
+            </div>
+          </div>
+
+          <div class="flex space-x-3 mt-6">
+            <button
+              type="button"
+              id="cancelProductBtn"
+              class="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-700 py-2 px-4 rounded-lg transition-colors"
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              class="flex-1 bg-green-600 hover:bg-green-700 text-white py-2 px-4 rounded-lg transition-colors"
+            >
+              <i class="fas fa-save mr-2"></i>Save Product
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- AI Suggestions Modal -->
+    <div
+      id="aiSuggestionsModal"
+      class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden items-center justify-center p-4"
+    >
+      <div
+        class="bg-white rounded-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto"
+      >
+        <div class="p-6 border-b border-gray-200">
+          <div class="flex items-center justify-between">
+            <h3 class="text-xl font-bold text-gray-800">
+              <i class="fas fa-brain text-purple-600 mr-2"></i>AI Optimization
+              Suggestions
+            </h3>
+            <button
+              id="closeAISuggestionsModal"
+              class="text-gray-500 hover:text-gray-700"
+            >
+              <i class="fas fa-times text-xl"></i>
+            </button>
+          </div>
+        </div>
+
+        <div id="aiSuggestionsContent" class="p-6">
+          <!-- AI suggestions will be loaded here -->
+        </div>
+      </div>
+    </div>
+
+    <!-- AI Insights Detail Modal -->
+    <div
+      id="aiInsightsModal"
+      class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden items-center justify-center p-4"
+    >
+      <div
+        class="bg-white rounded-2xl max-w-6xl w-full max-h-[90vh] overflow-y-auto"
+      >
+        <div class="p-6 border-b border-gray-200">
+          <div class="flex items-center justify-between">
+            <h3
+              id="aiInsightsModalTitle"
+              class="text-xl font-bold text-gray-800"
+            >
+              <i class="fas fa-chart-line text-blue-600 mr-2"></i>AI Business
+              Insights
+            </h3>
+            <button
+              id="closeAIInsightsModal"
+              class="text-gray-500 hover:text-gray-700"
+            >
+              <i class="fas fa-times text-xl"></i>
+            </button>
+          </div>
+        </div>
+
+        <div id="aiInsightsModalContent" class="p-6">
+          <!-- AI insights will be loaded here -->
+        </div>
+      </div>
+    </div>
+
+    <!-- Loading Indicator -->
+    <div
+      id="loadingIndicator"
+      class="hidden fixed inset-0 bg-black bg-opacity-30 z-50 flex items-center justify-center"
+    >
+      <div class="bg-white rounded-2xl p-8 shadow-2xl text-center max-w-sm">
+        <i class="fas fa-spinner fa-spin text-4xl text-green-600 mb-4"></i>
+        <p class="text-gray-700 font-semibold">Loading...</p>
+      </div>
+    </div>
+
+    <script src="wholesaler.js"></script>
+    <script>
+      // AI Integration JavaScript
+      document.addEventListener("DOMContentLoaded", function () {
+        // Load AI insights on page load
+        loadAIDashboardInsights();
+
+        // AI button event listeners
+        document
+          .getElementById("refreshAIInsights")
+          ?.addEventListener("click", loadAIDashboardInsights);
+        document
+          .getElementById("getOptimizationsBtn")
+          ?.addEventListener("click", loadProductOptimizations);
+        document
+          .getElementById("getInventoryInsightsBtn")
+          ?.addEventListener("click", loadInventoryInsights);
+        document
+          .getElementById("getCompetitiveAnalysisBtn")
+          ?.addEventListener("click", loadCompetitiveAnalysis);
+        document
+          .getElementById("getSalesInsightsBtn")
+          ?.addEventListener("click", loadSalesInsights);
+        document
+          .getElementById("aiOptimizeBtn")
+          ?.addEventListener("click", showAIOptimizationModal);
+        document
+          .getElementById("aiDescriptionBtn")
+          ?.addEventListener("click", generateAIDescription);
+
+        // Tab switching for AI insights
+        document
+          .getElementById("aiInsightsTab")
+          ?.addEventListener("click", function () {
+            switchTab("aiInsights");
+            loadAIInsightsTab();
+          });
+      });
+
+      // Load AI dashboard insights
+      async function loadAIDashboardInsights() {
+        try {
+          showLoading("aiInsightsContent");
+
+          const response = await fetch(
+            "/api/marketplace/ai/dashboard-insights",
+            {
+              headers: {
+                Authorization: `Bearer ${localStorage.getItem("token")}`,
+              },
+            }
+          );
+
+          const result = await response.json();
+
+          if (result.success) {
+            displayAIDashboardInsights(result.data);
+          } else {
+            showError(
+              "aiInsightsContent",
+              result.error || "Failed to load AI insights"
+            );
+          }
+        } catch (error) {
+          console.error("Error loading AI insights:", error);
+          showError("aiInsightsContent", "Failed to load AI insights");
+        }
+      }
+
+      // Display AI dashboard insights
+      function displayAIDashboardInsights(data) {
+        const container = document.getElementById("aiInsightsContent");
+
+        container.innerHTML = `
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                    <div class="bg-white bg-opacity-20 rounded-lg p-4">
+                        <div class="flex items-center">
+                            <i class="fas fa-boxes text-2xl mr-3"></i>
+                            <div>
+                                <p class="text-sm opacity-80">Products</p>
+                                <p class="text-xl font-bold">${
+                                  data.overview.total_products
+                                }</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-white bg-opacity-20 rounded-lg p-4">
+                        <div class="flex items-center">
+                            <i class="fas fa-exclamation-triangle text-2xl mr-3"></i>
+                            <div>
+                                <p class="text-sm opacity-80">Low Stock</p>
+                                <p class="text-xl font-bold">${
+                                  data.overview.low_stock_count
+                                }</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-white bg-opacity-20 rounded-lg p-4">
+                        <div class="flex items-center">
+                            <i class="fas fa-chart-line text-2xl mr-3"></i>
+                            <div>
+                                <p class="text-sm opacity-80">Revenue</p>
+                                <p class="text-xl font-bold">KES ${
+                                  data.overview.total_revenue || 0
+                                }</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-white bg-opacity-10 rounded-lg p-4">
+                    <h4 class="font-semibold mb-2">AI Recommendations:</h4>
+                    <div class="text-sm space-y-1">
+                        ${
+                          data.ai_insights.insights
+                            ? data.ai_insights.insights
+                                .split("\n")
+                                .slice(0, 3)
+                                .map((line) =>
+                                  line.trim()
+                                    ? `<p>• ${line
+                                        .replace(/[*#]/g, "")
+                                        .trim()}</p>`
+                                    : ""
+                                )
+                                .join("")
+                            : "<p>• Optimize your product descriptions for better visibility</p><p>• Consider bulk pricing for high-demand items</p><p>• Review low-stock items for restocking</p>"
+                        }
+                    </div>
+                    <button onclick="showDetailedAIInsights()" class="mt-3 bg-white bg-opacity-20 hover:bg-opacity-30 px-4 py-2 rounded-lg transition-colors text-sm">
+                        View Detailed Analysis
+                    </button>
+                </div>
+            `;
+      }
+
+      // Load product optimizations
+      async function loadProductOptimizations() {
+        try {
+          showLoading("productOptimizations");
+
+          const response = await fetch(
+            "/api/marketplace/ai/product-optimizations",
+            {
+              headers: {
+                Authorization: `Bearer ${localStorage.getItem("token")}`,
+              },
+            }
+          );
+
+          const result = await response.json();
+
+          if (result.success) {
+            displayProductOptimizations(result.data);
+          } else {
+            showError(
+              "productOptimizations",
+              result.error || "Failed to load optimizations"
+            );
+          }
+        } catch (error) {
+          console.error("Error loading product optimizations:", error);
+          showError("productOptimizations", "Failed to load optimizations");
+        }
+      }
+
+      // Display product optimizations
+      function displayProductOptimizations(data) {
+        const container = document.getElementById("productOptimizations");
+
+        if (!data.optimizations || data.optimizations.length === 0) {
+          container.innerHTML =
+            '<p class="text-gray-500 text-center py-4">No optimizations available</p>';
+          return;
+        }
+
+        container.innerHTML = data.optimizations
+          .map(
+            (opt) => `
+                <div class="bg-white rounded-lg p-4 border border-purple-200">
+                    <div class="flex items-center justify-between mb-2">
+                        <h4 class="font-semibold text-gray-800">${
+                          opt.product_name
+                        }</h4>
+                        <button onclick="applyOptimization('${
+                          opt.product_id
+                        }', ${JSON.stringify(opt).replace(/"/g, "&quot;")})" 
+                                class="bg-purple-600 hover:bg-purple-700 text-white px-3 py-1 rounded text-sm transition-colors">
+                            Apply
+                        </button>
+                    </div>
+                    <div class="text-sm text-gray-600 space-y-1">
+                        ${
+                          opt.optimized_description
+                            ? `<p><strong>Description:</strong> ${opt.optimized_description.substring(
+                                0,
+                                100
+                              )}...</p>`
+                            : ""
+                        }
+                        ${
+                          opt.suggested_bulk_pricing &&
+                          Object.keys(opt.suggested_bulk_pricing).length > 0
+                            ? `<p><strong>Bulk Pricing:</strong> ${
+                                Object.keys(opt.suggested_bulk_pricing).length
+                              } tiers suggested</p>`
+                            : ""
+                        }
+                        ${
+                          opt.optimized_category
+                            ? `<p><strong>Category:</strong> ${opt.optimized_category}</p>`
+                            : ""
+                        }
+                    </div>
+                </div>
+            `
+          )
+          .join("");
+      }
+
+      // Load inventory insights
+      async function loadInventoryInsights() {
+        try {
+          showLoading("inventoryInsights");
+
+          const response = await fetch(
+            "/api/marketplace/ai/inventory-recommendations",
+            {
+              headers: {
+                Authorization: `Bearer ${localStorage.getItem("token")}`,
+              },
+            }
+          );
+
+          const result = await response.json();
+
+          if (result.success) {
+            displayInventoryInsights(result.data);
+          } else {
+            showError(
+              "inventoryInsights",
+              result.error || "Failed to load inventory insights"
+            );
+          }
+        } catch (error) {
+          console.error("Error loading inventory insights:", error);
+          showError("inventoryInsights", "Failed to load inventory insights");
+        }
+      }
+
+      // Display inventory insights
+      function displayInventoryInsights(data) {
+        const container = document.getElementById("inventoryInsights");
+        const recs = data.recommendations;
+
+        container.innerHTML = `
+                <div class="space-y-3">
+                    ${
+                      recs.critical_restock && recs.critical_restock.length > 0
+                        ? `
+                        <div class="bg-red-50 border border-red-200 rounded-lg p-3">
+                            <h5 class="font-semibold text-red-800 mb-2">🚨 Critical Restock (${
+                              recs.critical_restock.length
+                            })</h5>
+                            <div class="text-sm text-red-700">
+                                ${recs.critical_restock
+                                  .slice(0, 3)
+                                  .map(
+                                    (item) =>
+                                      `<p>• ${item.name} (${item.stock_quantity} left)</p>`
+                                  )
+                                  .join("")}
+                            </div>
+                        </div>
+                    `
+                        : ""
+                    }
+                    
+                    ${
+                      recs.fast_movers && recs.fast_movers.length > 0
+                        ? `
+                        <div class="bg-green-50 border border-green-200 rounded-lg p-3">
+                            <h5 class="font-semibold text-green-800 mb-2">🔥 Fast Movers (${
+                              recs.fast_movers.length
+                            })</h5>
+                            <div class="text-sm text-green-700">
+                                ${recs.fast_movers
+                                  .slice(0, 3)
+                                  .map(
+                                    (item) =>
+                                      `<p>• ${item.name} (${item.recent_sales} sold)</p>`
+                                  )
+                                  .join("")}
+                            </div>
+                        </div>
+                    `
+                        : ""
+                    }
+                    
+                    ${
+                      recs.slow_movers && recs.slow_movers.length > 0
+                        ? `
+                        <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-3">
+                            <h5 class="font-semibold text-yellow-800 mb-2">🐌 Slow Movers (${
+                              recs.slow_movers.length
+                            })</h5>
+                            <div class="text-sm text-yellow-700">
+                                ${recs.slow_movers
+                                  .slice(0, 3)
+                                  .map(
+                                    (item) =>
+                                      `<p>• ${item.name} (${item.recent_sales} sold)</p>`
+                                  )
+                                  .join("")}
+                            </div>
+                        </div>
+                    `
+                        : ""
+                    }
+                </div>
+                
+                <div class="mt-4 text-center">
+                    <p class="text-sm text-gray-600">Total Stock Value: <strong>KES ${
+                      data.total_stock_value?.toLocaleString() || 0
+                    }</strong></p>
+                </div>
+            `;
+      }
+
+      // Load competitive analysis
+      async function loadCompetitiveAnalysis() {
+        try {
+          showLoading("competitiveAnalysis");
+
+          const response = await fetch(
+            "/api/marketplace/ai/competitive-analysis",
+            {
+              headers: {
+                Authorization: `Bearer ${localStorage.getItem("token")}`,
+              },
+            }
+          );
+
+          const result = await response.json();
+
+          if (result.success) {
+            displayCompetitiveAnalysis(result.data);
+          } else {
+            showError(
+              "competitiveAnalysis",
+              result.error || "Failed to load competitive analysis"
+            );
+          }
+        } catch (error) {
+          console.error("Error loading competitive analysis:", error);
+          showError(
+            "competitiveAnalysis",
+            "Failed to load competitive analysis"
+          );
+        }
+      }
+
+      // Display competitive analysis
+      function displayCompetitiveAnalysis(data) {
+        const container = document.getElementById("competitiveAnalysis");
+
+        container.innerHTML = `
+                <div class="space-y-3">
+                    <div class="bg-white rounded-lg p-4 border border-orange-200">
+                        <h5 class="font-semibold text-orange-800 mb-2">Market Position</h5>
+                        <div class="text-sm text-gray-700">
+                            <p>Competitors analyzed: <strong>${
+                              data.competitors_analyzed
+                            }</strong></p>
+                            <p>Categories: <strong>${
+                              data.categories_analyzed?.join(", ") || "Various"
+                            }</strong></p>
+                            <p>Region: <strong>${
+                              data.region || "Kenya"
+                            }</strong></p>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-orange-50 border border-orange-200 rounded-lg p-3">
+                        <h5 class="font-semibold text-orange-800 mb-2">Key Insights</h5>
+                        <div class="text-sm text-orange-700">
+                            ${
+                              data.analysis
+                                ? data.analysis
+                                    .split("\n")
+                                    .slice(0, 4)
+                                    .map((line) =>
+                                      line.trim() && !line.includes("**")
+                                        ? `<p>• ${line
+                                            .replace(/[*#]/g, "")
+                                            .trim()}</p>`
+                                        : ""
+                                    )
+                                    .join("")
+                                : "<p>• Analyze your competitive position</p><p>• Identify pricing opportunities</p><p>• Discover market gaps</p>"
+                            }
+                        </div>
+                    </div>
+                </div>
+                
+                <button onclick="showDetailedCompetitiveAnalysis()" class="mt-4 w-full bg-orange-100 hover:bg-orange-200 text-orange-800 py-2 px-4 rounded-lg transition-colors text-sm">
+                    View Full Analysis
+                </button>
+            `;
+      }
+
+      // Load sales insights
+      async function loadSalesInsights() {
+        try {
+          const timeframe = document.getElementById("salesTimeframe").value;
+          showLoading("salesInsights");
+
+          const response = await fetch(
+            `/api/marketplace/ai/sales-insights?timeframe=${timeframe}`,
+            {
+              headers: {
+                Authorization: `Bearer ${localStorage.getItem("token")}`,
+              },
+            }
+          );
+
+          const result = await response.json();
+
+          if (result.success) {
+            displaySalesInsights(result.data);
+          } else {
+            showError(
+              "salesInsights",
+              result.error || "Failed to load sales insights"
+            );
+          }
+        } catch (error) {
+          console.error("Error loading sales insights:", error);
+          showError("salesInsights", "Failed to load sales insights");
+        }
+      }
+
+      // Display sales insights
+      function displaySalesInsights(data) {
+        const container = document.getElementById("salesInsights");
+        const metrics = data.sales_metrics;
+
+        container.innerHTML = `
+                <div class="space-y-3">
+                    <div class="grid grid-cols-2 gap-3">
+                        <div class="bg-white rounded-lg p-3 border border-blue-200">
+                            <p class="text-xs text-gray-600">Revenue</p>
+                            <p class="text-lg font-bold text-blue-800">KES ${
+                              metrics?.total_revenue?.toLocaleString() || 0
+                            }</p>
+                        </div>
+                        <div class="bg-white rounded-lg p-3 border border-blue-200">
+                            <p class="text-xs text-gray-600">Orders</p>
+                            <p class="text-lg font-bold text-blue-800">${
+                              metrics?.total_orders || 0
+                            }</p>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-blue-50 border border-blue-200 rounded-lg p-3">
+                        <h5 class="font-semibold text-blue-800 mb-2">Performance Insights</h5>
+                        <div class="text-sm text-blue-700">
+                            ${
+                              data.insights
+                                ? data.insights
+                                    .split("\n")
+                                    .slice(0, 4)
+                                    .map((line) =>
+                                      line.trim() && !line.includes("**")
+                                        ? `<p>• ${line
+                                            .replace(/[*#]/g, "")
+                                            .trim()}</p>`
+                                        : ""
+                                    )
+                                    .join("")
+                                : "<p>• Track your sales performance</p><p>• Identify growth opportunities</p><p>• Optimize product mix</p>"
+                            }
+                        </div>
+                    </div>
+                </div>
+                
+                <button onclick="showDetailedSalesInsights()" class="mt-4 w-full bg-blue-100 hover:bg-blue-200 text-blue-800 py-2 px-4 rounded-lg transition-colors text-sm">
+                    View Detailed Report
+                </button>
+            `;
+      }
+
+      // Apply AI optimization to product
+      async function applyOptimization(productId, optimization) {
+        try {
+          showLoadingIndicator();
+
+          const response = await fetch(
+            "/api/marketplace/ai/apply-suggestions",
+            {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${localStorage.getItem("token")}`,
+              },
+              body: JSON.stringify({
+                product_id: productId,
+                suggestions: optimization,
+              }),
+            }
+          );
+
+          const result = await response.json();
+
+          if (result.success) {
+            showNotification("AI suggestions applied successfully!", "success");
+            loadProductOptimizations(); // Refresh optimizations
+          } else {
+            showNotification(
+              result.error || "Failed to apply suggestions",
+              "error"
+            );
+          }
+        } catch (error) {
+          console.error("Error applying optimization:", error);
+          showNotification("Failed to apply suggestions", "error");
+        } finally {
+          hideLoadingIndicator();
+        }
+      }
+
+      // Helper functions
+      function showLoading(containerId) {
+        const container = document.getElementById(containerId);
+        if (container) {
+          container.innerHTML = `
+                    <div class="text-center py-4 text-gray-500">
+                        <i class="fas fa-spinner fa-spin text-2xl mb-2"></i>
+                        <p>Loading AI insights...</p>
+                    </div>
+                `;
+        }
+      }
+
+      function showError(containerId, message) {
+        const container = document.getElementById(containerId);
+        if (container) {
+          container.innerHTML = `
+                    <div class="text-center py-4 text-red-500">
+                        <i class="fas fa-exclamation-triangle text-2xl mb-2"></i>
+                        <p>${message}</p>
+                    </div>
+                `;
+        }
+      }
+
+      function loadAIInsightsTab() {
+        // Load all AI insights when tab is opened
+        loadProductOptimizations();
+        loadInventoryInsights();
+        loadCompetitiveAnalysis();
+        loadSalesInsights();
+      }
+
+      // Detailed view functions (to be implemented)
+      function showDetailedAIInsights() {
+        // Show detailed AI insights in modal
+        console.log("Show detailed AI insights");
+      }
+
+      function showDetailedCompetitiveAnalysis() {
+        // Show detailed competitive analysis in modal
+        console.log("Show detailed competitive analysis");
+      }
+
+      function showDetailedSalesInsights() {
+        // Show detailed sales insights in modal
+        console.log("Show detailed sales insights");
+      }
+
+      function showAIOptimizationModal() {
+        // Show AI optimization modal for selected products
+        console.log("Show AI optimization modal");
+      }
+
+      function generateAIDescription() {
+        // Generate AI description for product
+        console.log("Generate AI description");
+      }
+    </script>
+  </body>
+</html>

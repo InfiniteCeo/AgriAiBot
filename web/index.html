@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AgriAI Bot - Agricultural Assistant</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #10b981;
+            border-radius: 3px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #059669;
+        }
+        
+        /* Animations */
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .message {
+            animation: slideIn 0.3s ease-out;
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.5s ease-out;
+        }
+        
+        /* Loading animation */
+        @keyframes pulse {
+            0%, 100% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0.5;
+            }
+        }
+        
+        .loading {
+            animation: pulse 1.5s ease-in-out infinite;
+        }
+
+        /* Page transitions */
+        .page-content {
+            transition: opacity 0.3s ease-in-out;
+        }
+        
+        .page-content.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        /* Navigation styles */
+        .nav-item {
+            transition: all 0.3s ease;
+        }
+        
+        .nav-item:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+        
+        .nav-item.active {
+            background-color: rgba(255, 255, 255, 0.2);
+            border-radius: 0.5rem;
+        }
+
+        /* Background pattern */
+        .bg-pattern {
+            background-image: 
+                radial-gradient(circle at 25px 25px, rgba(16, 185, 129, 0.1) 2px, transparent 0),
+                radial-gradient(circle at 75px 75px, rgba(16, 185, 129, 0.1) 2px, transparent 0);
+            background-size: 100px 100px;
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-green-50 to-emerald-100 min-h-screen bg-pattern">
+    <!-- Navigation Bar -->
+    <nav id="mainNav" class="bg-gradient-to-r from-green-600 to-emerald-600 shadow-lg">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex items-center space-x-3">
+                    <i class="fas fa-seedling text-white text-2xl"></i>
+                    <h1 class="text-white font-bold text-xl cursor-pointer" onclick="navigateTo('dashboard')">AgriAI Bot</h1>
+                </div>
+                
+                <!-- Authenticated Navigation -->
+                <div id="authNav" class="hidden flex items-center space-x-4">
+                    <button onclick="navigateTo('dashboard')" class="nav-item text-white hover:text-green-200 transition-colors px-3 py-2 rounded">
+                        <i class="fas fa-home mr-2"></i>Dashboard
+                    </button>
+                    <button onclick="navigateTo('chat')" class="nav-item text-white hover:text-green-200 transition-colors px-3 py-2 rounded">
+                        <i class="fas fa-comments mr-2"></i>AI Chat
+                    </button>
+                    <button onclick="navigateTo('marketplace')" class="nav-item text-white hover:text-green-200 transition-colors px-3 py-2 rounded">
+                        <i class="fas fa-store mr-2"></i>Marketplace
+                    </button>
+                    <button id="saccoNavBtn" onclick="navigateTo('sacco')" class="nav-item text-white hover:text-green-200 transition-colors px-3 py-2 rounded">
+                        <i class="fas fa-users mr-2"></i>SACCO
+                    </button>
+                    <button id="wholesalerNavBtn" onclick="window.location.href='wholesaler.html'" class="nav-item text-white hover:text-green-200 transition-colors px-3 py-2 rounded hidden">
+                        <i class="fas fa-warehouse mr-2"></i>Inventory
+                    </button>
+                    <button onclick="navigateTo('profile')" class="nav-item text-white hover:text-green-200 transition-colors px-3 py-2 rounded">
+                        <i class="fas fa-user mr-2"></i>Profile
+                    </button>
+                    <button id="adminNavBtn" onclick="navigateTo('admin')" class="nav-item text-white hover:text-green-200 transition-colors px-3 py-2 rounded hidden">
+                        <i class="fas fa-user-shield mr-2"></i>Admin
+                    </button>
+                    
+                    <!-- User Info -->
+                    <div class="flex items-center space-x-2 text-white border-l border-green-400 pl-4">
+                        <i class="fas fa-user-circle text-xl"></i>
+                        <span id="navUserName" class="hidden md:block">User</span>
+                    </div>
+                    
+                    <!-- Logout -->
+                    <button id="logoutBtn" class="text-white hover:text-green-200 transition-colors">
+                        <i class="fas fa-sign-out-alt mr-2"></i>Logout
+                    </button>
+                </div>
+                
+                <!-- Unauthenticated Navigation -->
+                <div id="unauthNav" class="flex items-center space-x-4">
+                    <button onclick="navigateTo('chat')" class="nav-item text-white hover:text-green-200 transition-colors px-3 py-2 rounded">
+                        <i class="fas fa-comments mr-2"></i>Try AI Chat
+                    </button>
+                    <button onclick="navigateTo('login')" class="bg-white text-green-600 hover:bg-green-50 px-4 py-2 rounded-lg transition-colors font-medium">
+                        <i class="fas fa-sign-in-alt mr-2"></i>Login
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content Container -->
+    <div id="appContainer" class="min-h-screen">
+        <!-- Loading Screen -->
+        <div id="loadingScreen" class="flex items-center justify-center min-h-screen">
+            <div class="text-center">
+                <div class="inline-block bg-gradient-to-r from-green-500 to-emerald-500 text-white p-6 rounded-full mb-4">
+                    <i class="fas fa-seedling text-4xl"></i>
+                </div>
+                <h2 class="text-2xl font-bold text-gray-800 mb-2">AgriAI Bot</h2>
+                <p class="text-gray-600 mb-4">Loading your agricultural assistant...</p>
+                <div class="flex justify-center">
+                    <i class="fas fa-spinner fa-spin text-2xl text-green-600"></i>
+                </div>
+            </div>
+        </div>
+
+        <!-- Page Content will be dynamically loaded here -->
+        <div id="pageContent" class="page-content hidden"></div>
+    </div>
+
+    <!-- Global Loading Indicator -->
+    <div id="globalLoading" class="hidden fixed inset-0 bg-black bg-opacity-30 z-50 flex items-center justify-center">
+        <div class="bg-white rounded-2xl p-8 shadow-2xl text-center max-w-sm">
+            <i class="fas fa-spinner fa-spin text-4xl text-green-600 mb-4"></i>
+            <p class="text-gray-700 font-semibold">Loading...</p>
+        </div>
+    </div>
+
+    <!-- Notification Container -->
+    <div id="notificationContainer" class="fixed top-4 right-4 z-50 space-y-2"></div>
+
+    <!-- Scripts -->
+    <script src="app.js"></script>
+    <script>
+        // Global notification system
+        function showNotification(message, type = 'info') {
+            const container = document.getElementById('notificationContainer');
+            const notification = document.createElement('div');
+            
+            const bgColor = {
+                'success': 'bg-green-500',
+                'error': 'bg-red-500',
+                'warning': 'bg-yellow-500',
+                'info': 'bg-blue-500'
+            }[type] || 'bg-blue-500';
+            
+            const icon = {
+                'success': 'fas fa-check-circle',
+                'error': 'fas fa-exclamation-circle',
+                'warning': 'fas fa-exclamation-triangle',
+                'info': 'fas fa-info-circle'
+            }[type] || 'fas fa-info-circle';
+            
+            notification.className = `${bgColor} text-white px-6 py-4 rounded-lg shadow-lg flex items-center space-x-3 transform transition-all duration-300 translate-x-full`;
+            notification.innerHTML = `
+                <i class="${icon}"></i>
+                <span>${message}</span>
+                <button onclick="this.parentElement.remove()" class="ml-auto text-white hover:text-gray-200">
+                    <i class="fas fa-times"></i>
+                </button>
+            `;
+            
+            container.appendChild(notification);
+            
+            // Animate in
+            setTimeout(() => {
+                notification.classList.remove('translate-x-full');
+            }, 100);
+            
+            // Auto remove after 5 seconds
+            setTimeout(() => {
+                notification.classList.add('translate-x-full');
+                setTimeout(() => notification.remove(), 300);
+            }, 5000);
+        }
+
+        // Global loading indicator functions
+        function showLoadingIndicator() {
+            document.getElementById('globalLoading').classList.remove('hidden');
+        }
+
+        function hideLoadingIndicator() {
+            document.getElementById('globalLoading').classList.add('hidden');
+        }
+
+        // Enhanced navigation for AI features
+        function navigateToAI() {
+            const user = JSON.parse(localStorage.getItem('user') || '{}');
+            if (user.user_type === 'wholesaler') {
+                window.location.href = 'wholesaler.html#ai-insights';
+            } else {
+                window.location.href = 'recommendations.html';
+            }
+        }
+
+        // Add AI navigation button for authenticated users
+        document.addEventListener('DOMContentLoaded', function() {
+            const user = JSON.parse(localStorage.getItem('user') || '{}');
+            if (user.id) {
+                const authNav = document.getElementById('authNav');
+                if (authNav && !document.getElementById('aiNavBtn')) {
+                    const aiButton = document.createElement('button');
+                    aiButton.id = 'aiNavBtn';
+                    aiButton.onclick = navigateToAI;
+                    aiButton.className = 'nav-item text-white hover:text-green-200 transition-colors px-3 py-2 rounded';
+                    aiButton.innerHTML = '<i class="fas fa-brain mr-2"></i>AI Assistant';
+                    
+                    // Insert before profile button
+                    const profileBtn = authNav.querySelector('button[onclick="navigateTo(\'profile\')"]');
+                    if (profileBtn) {
+                        authNav.insertBefore(aiButton, profileBtn);
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html>

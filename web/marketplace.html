@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Marketplace - AgriAI Bot</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #10b981;
+            border-radius: 3px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #059669;
+        }
+        
+        /* Animations */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.5s ease-out;
+        }
+        
+        /* Product card hover effects */
+        .product-card {
+            transition: all 0.3s ease;
+        }
+        
+        .product-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+        
+        /* Shopping cart badge */
+        .cart-badge {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background: #ef4444;
+            color: white;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        /* Filter sidebar */
+        .filter-sidebar {
+            transition: transform 0.3s ease;
+        }
+        
+        @media (max-width: 768px) {
+            .filter-sidebar.hidden {
+                transform: translateX(-100%);
+            }
+        }
+        
+        /* Price range slider */
+        .price-slider {
+            -webkit-appearance: none;
+            appearance: none;
+            height: 6px;
+            border-radius: 3px;
+            background: #e5e7eb;
+            outline: none;
+        }
+        
+        .price-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #10b981;
+            cursor: pointer;
+        }
+        
+        .price-slider::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #10b981;
+            cursor: pointer;
+            border: none;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <!-- Navigation Bar -->
+    <nav class="bg-gradient-to-r from-green-600 to-emerald-600 shadow-lg sticky top-0 z-40">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex items-center space-x-3">
+                    <i class="fas fa-seedling text-white text-2xl"></i>
+                    <h1 class="text-white font-bold text-xl">AgriAI Bot</h1>
+                    <span class="text-green-200 text-sm hidden md:block">Marketplace</span>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <a href="dashboard.html" class="text-white hover:text-green-200 transition-colors">
+                        <i class="fas fa-home mr-2"></i>Dashboard
+                    </a>
+                    <div class="relative">
+                        <button id="cartBtn" class="text-white hover:text-green-200 transition-colors p-2">
+                            <i class="fas fa-shopping-cart text-xl"></i>
+                            <span id="cartBadge" class="cart-badge hidden">0</span>
+                        </button>
+                    </div>
+                    <div class="flex items-center space-x-2 text-white">
+                        <i class="fas fa-user-circle text-xl"></i>
+                        <span id="userName" class="hidden md:block">Loading...</span>
+                    </div>
+                    <button id="logoutBtn" class="text-white hover:text-green-200 transition-colors">
+                        <i class="fas fa-sign-out-alt mr-2"></i>Logout
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="max-w-7xl mx-auto px-4 py-6">
+        <!-- Header Section -->
+        <div class="bg-white rounded-2xl shadow-lg mb-6 p-6 fade-in">
+            <div class="flex flex-col md:flex-row md:items-center md:justify-between">
+                <div>
+                    <h2 class="text-2xl md:text-3xl font-bold text-gray-800 mb-2">
+                        <i class="fas fa-store mr-3 text-green-600"></i>Marketplace
+                    </h2>
+                    <p class="text-gray-600">
+                        Browse farm inputs, equipment, and services from trusted suppliers
+                    </p>
+                </div>
+                <div class="mt-4 md:mt-0 flex space-x-3">
+                    <button id="filterToggle" class="md:hidden bg-gray-200 hover:bg-gray-300 px-4 py-2 rounded-lg transition-colors">
+                        <i class="fas fa-filter mr-2"></i>Filters
+                    </button>
+                    <button id="viewToggle" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg transition-colors">
+                        <i class="fas fa-th-large mr-2"></i>Grid View
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="flex flex-col lg:flex-row gap-6">
+            <!-- Filter Sidebar -->
+            <div id="filterSidebar" class="lg:w-80 filter-sidebar">
+                <div class="bg-white rounded-2xl shadow-lg p-6 sticky top-24">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-lg font-bold text-gray-800">
+                            <i class="fas fa-filter mr-2 text-green-600"></i>Filters
+                        </h3>
+                        <button id="clearFilters" class="text-sm text-green-600 hover:text-green-700">
+                            Clear All
+                        </button>
+                    </div>
+
+                    <!-- Search -->
+                    <div class="mb-6">
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Search Products</label>
+                        <div class="relative">
+                            <input type="text" id="searchInput" placeholder="Search by name or description..." 
+                                   class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500">
+                            <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
+                        </div>
+                    </div>
+
+                    <!-- Category Filter -->
+                    <div class="mb-6">
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Category</label>
+                        <select id="categoryFilter" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500">
+                            <option value="">All Categories</option>
+                            <option value="Seeds">Seeds</option>
+                            <option value="Fertilizers">Fertilizers</option>
+                            <option value="Pesticides">Pesticides</option>
+                            <option value="Tools">Tools & Equipment</option>
+                            <option value="Irrigation">Irrigation</option>
+                            <option value="Livestock">Livestock Feed</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+
+                    <!-- Location Filter -->
+                    <div class="mb-6">
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Location</label>
+                        <select id="locationFilter" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500">
+                            <option value="">All Locations</option>
+                            <option value="Nairobi">Nairobi</option>
+                            <option value="Central">Central</option>
+                            <option value="Coast">Coast</option>
+                            <option value="Eastern">Eastern</option>
+                            <option value="North Eastern">North Eastern</option>
+                            <option value="Nyanza">Nyanza</option>
+                            <option value="Rift Valley">Rift Valley</option>
+                            <option value="Western">Western</option>
+                        </select>
+                    </div>
+
+                    <!-- Price Range -->
+                    <div class="mb-6">
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Price Range (KES)</label>
+                        <div class="space-y-3">
+                            <div class="flex items-center space-x-3">
+                                <input type="number" id="minPrice" placeholder="Min" 
+                                       class="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500">
+                                <span class="text-gray-500">-</span>
+                                <input type="number" id="maxPrice" placeholder="Max" 
+                                       class="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Bulk Pricing Filter -->
+                    <div class="mb-6">
+                        <label class="flex items-center">
+                            <input type="checkbox" id="bulkPricingFilter" class="rounded border-gray-300 text-green-600 focus:ring-green-500">
+                            <span class="ml-2 text-sm text-gray-700">Has Bulk Pricing</span>
+                        </label>
+                    </div>
+
+                    <!-- Sort Options -->
+                    <div class="mb-6">
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Sort By</label>
+                        <select id="sortBy" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500">
+                            <option value="created_at:desc">Newest First</option>
+                            <option value="created_at:asc">Oldest First</option>
+                            <option value="unit_price:asc">Price: Low to High</option>
+                            <option value="unit_price:desc">Price: High to Low</option>
+                            <option value="name:asc">Name: A to Z</option>
+                            <option value="name:desc">Name: Z to A</option>
+                        </select>
+                    </div>
+
+                    <!-- Apply Filters Button -->
+                    <button id="applyFilters" class="w-full bg-gradient-to-r from-green-600 to-emerald-600 text-white py-2 px-4 rounded-lg hover:from-green-700 hover:to-emerald-700 transition-all duration-200">
+                        <i class="fas fa-search mr-2"></i>Apply Filters
+                    </button>
+                </div>
+            </div>
+
+            <!-- Main Content -->
+            <div class="flex-1">
+                <!-- Results Header -->
+                <div class="bg-white rounded-lg shadow-sm p-4 mb-6 flex items-center justify-between">
+                    <div>
+                        <span id="resultsCount" class="text-gray-600">Loading products...</span>
+                    </div>
+                    <div class="flex items-center space-x-3">
+                        <span class="text-sm text-gray-600">View:</span>
+                        <button id="gridViewBtn" class="p-2 text-green-600 bg-green-100 rounded">
+                            <i class="fas fa-th-large"></i>
+                        </button>
+                        <button id="listViewBtn" class="p-2 text-gray-600 hover:text-green-600 hover:bg-green-100 rounded">
+                            <i class="fas fa-list"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Products Grid -->
+                <div id="productsContainer" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+                    <!-- Products will be loaded here -->
+                    <div class="col-span-full text-center py-12">
+                        <i class="fas fa-spinner fa-spin text-4xl text-green-600 mb-4"></i>
+                        <p class="text-gray-600">Loading products...</p>
+                    </div>
+                </div>
+
+                <!-- Load More Button -->
+                <div id="loadMoreContainer" class="text-center mt-8 hidden">
+                    <button id="loadMoreBtn" class="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg transition-colors">
+                        <i class="fas fa-plus mr-2"></i>Load More Products
+                    </button>
+                </div>
+
+                <!-- No Results -->
+                <div id="noResults" class="hidden text-center py-12">
+                    <i class="fas fa-search text-6xl text-gray-300 mb-4"></i>
+                    <h3 class="text-xl font-semibold text-gray-600 mb-2">No products found</h3>
+                    <p class="text-gray-500 mb-4">Try adjusting your filters or search terms</p>
+                    <button onclick="clearAllFilters()" class="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-lg transition-colors">
+                        Clear Filters
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Shopping Cart Sidebar -->
+    <div id="cartSidebar" class="fixed inset-y-0 right-0 w-96 bg-white shadow-2xl transform translate-x-full transition-transform duration-300 z-50">
+        <div class="flex flex-col h-full">
+            <!-- Cart Header -->
+            <div class="bg-green-600 text-white p-4 flex items-center justify-between">
+                <h3 class="text-lg font-bold">
+                    <i class="fas fa-shopping-cart mr-2"></i>Shopping Cart
+                </h3>
+                <button id="closeCart" class="text-white hover:text-green-200">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+            </div>
+
+            <!-- Cart Items -->
+            <div id="cartItems" class="flex-1 overflow-y-auto p-4">
+                <!-- Cart items will be loaded here -->
+                <div class="text-center text-gray-500 py-8">
+                    <i class="fas fa-shopping-cart text-4xl mb-4"></i>
+                    <p>Your cart is empty</p>
+                    <p class="text-sm">Add some products to get started</p>
+                </div>
+            </div>
+
+            <!-- Cart Footer -->
+            <div id="cartFooter" class="border-t border-gray-200 p-4 hidden">
+                <div class="mb-4">
+                    <div class="flex justify-between items-center text-lg font-bold">
+                        <span>Total:</span>
+                        <span id="cartTotal">KES 0</span>
+                    </div>
+                </div>
+                <div class="space-y-2">
+                    <button id="checkoutBtn" class="w-full bg-green-600 hover:bg-green-700 text-white py-3 px-4 rounded-lg transition-colors">
+                        <i class="fas fa-credit-card mr-2"></i>Proceed to Checkout
+                    </button>
+                    <button id="clearCartBtn" class="w-full bg-gray-200 hover:bg-gray-300 text-gray-700 py-2 px-4 rounded-lg transition-colors">
+                        <i class="fas fa-trash mr-2"></i>Clear Cart
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Product Detail Modal -->
+    <div id="productModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+            <!-- Modal content will be loaded here -->
+        </div>
+    </div>
+
+    <!-- Bulk Order Modal -->
+    <div id="bulkOrderModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-2xl w-full p-6">
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="text-xl font-bold text-gray-800">Join Bulk Order</h3>
+                <button id="closeBulkOrderModal" class="text-gray-500 hover:text-gray-700">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+            </div>
+            <!-- Bulk order content will be loaded here -->
+        </div>
+    </div>
+
+    <!-- Loading Indicator -->
+    <div id="loadingIndicator" class="hidden fixed inset-0 bg-black bg-opacity-30 z-50 flex items-center justify-center">
+        <div class="bg-white rounded-2xl p-8 shadow-2xl text-center max-w-sm">
+            <i class="fas fa-spinner fa-spin text-4xl text-green-600 mb-4"></i>
+            <p class="text-gray-700 font-semibold">Loading...</p>
+        </div>
+    </div>
+
+    <script src="marketplace.js"></script>
+</body>
+</html>
