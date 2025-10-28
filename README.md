@@ -1,9 +1,9 @@
 # AgriAI Bot 🌾
 TEAM===> **AGRIBOT**
 
-Leader=>JAMES BOND ONYANGO    role===>web developer
-      =>STRAVEN MACHUKI       role===>web  designer 
-      =>STANLY ONCHANGO       role===>whatsapp bot developer
+Leader : JAMES BOND ONYANGO    role===>web developer
+       : STRAVEN MACHUKI       role===>web  designer 
+       :STANLY ONCHANGO       role===>whatsapp bot developer
       
 
 
